@@ -1,6 +1,6 @@
 {
   "municipality": "Marnix",
-  "generated_at": "2026-03-06T18:56:50.914252+00:00",
+  "generated_at": "2026-03-06T19:39:17.715790+00:00",
   "facility_count": 1,
   "facilities": [
     {
@@ -15,11 +15,11 @@
       "latitude": 52.37836,
       "longitude": 4.87785,
       "capacity": 800,
-      "vacantSpaces": 94,
-      "occupancyPercent": 88.2,
+      "vacantSpaces": 95,
+      "occupancyPercent": 88.1,
       "open": true,
       "full": false,
-      "lastUpdated": 1772822889,
+      "lastUpdated": 1772825654,
       "minimumHeightInMeters": null,
       "chargingPointCapacity": 0,
       "disabledAccess": false,
