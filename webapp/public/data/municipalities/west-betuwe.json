@@ -1,0 +1,29 @@
+{
+  "municipality": "West Betuwe",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
+  "facility_count": 1,
+  "facilities": [
+    {
+      "uuid": "4209942e-00e7-491b-b4d9-09c0cc012038",
+      "name": "P + R station Geldermalsen",
+      "operator": "Nederlandse Spoorwegen",
+      "street": "Deliseweg",
+      "houseNumber": "0",
+      "zipcode": "4191NX",
+      "city": "Geldermalsen",
+      "province": "",
+      "latitude": 51.882779,
+      "longitude": 5.270282,
+      "capacity": 493,
+      "vacantSpaces": null,
+      "occupancyPercent": null,
+      "open": null,
+      "full": null,
+      "lastUpdated": null,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
+    }
+  ]
+}

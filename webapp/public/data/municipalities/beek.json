@@ -1,12 +1,17 @@
 {
   "municipality": "Beek",
-  "generated_at": "2026-03-06T14:44:53.208422+00:00",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
   "facility_count": 1,
   "facilities": [
     {
       "uuid": "6b153ac5-9aee-4758-a5a3-7e92a2b98eab",
       "name": "P+R Aan de drie heren (Beek)",
       "operator": "Nederlandse Spoorwegen",
+      "street": "Aan de Drie Heren",
+      "houseNumber": "0",
+      "zipcode": "6191BH",
+      "city": "Beek",
+      "province": "Limburg",
       "latitude": 50.946975,
       "longitude": 5.786335,
       "capacity": 121,
@@ -14,7 +19,11 @@
       "occupancyPercent": 0.0,
       "open": true,
       "full": false,
-      "lastUpdated": 1639497701
+      "lastUpdated": 1639497701,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
     }
   ]
 }

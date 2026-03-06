@@ -1,20 +1,29 @@
 {
   "municipality": "HWZB",
-  "generated_at": "2026-03-06T14:44:53.208422+00:00",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
   "facility_count": 1,
   "facilities": [
     {
       "uuid": "63811863-d897-4247-a726-efb29a24379d",
       "name": "P+R Halfweg-Zwanenburg Station (HWZB)",
       "operator": "Nederlandse Spoorwegen",
+      "street": "Houtrakkerweg",
+      "houseNumber": "14",
+      "zipcode": "1165MX",
+      "city": "HALFWEG",
+      "province": "",
       "latitude": 52.38653,
       "longitude": 4.74659,
       "capacity": 137,
-      "vacantSpaces": 94,
-      "occupancyPercent": 31.4,
+      "vacantSpaces": 97,
+      "occupancyPercent": 29.2,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808241
+      "lastUpdated": 1772811019,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
     }
   ]
 }

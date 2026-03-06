@@ -1,12 +1,17 @@
 {
   "municipality": "Susteren",
-  "generated_at": "2026-03-06T14:44:53.208422+00:00",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
   "facility_count": 2,
   "facilities": [
     {
       "uuid": "d20db70b-b980-41b2-a457-67148670b260",
       "name": "P+R Spoorstraat (Susteren)",
       "operator": "Nederlandse Spoorwegen",
+      "street": "Spoorstraat",
+      "houseNumber": "0",
+      "zipcode": "6114EM",
+      "city": "Susteren",
+      "province": "Limburg",
       "latitude": 51.060712,
       "longitude": 5.862456,
       "capacity": 27,
@@ -14,12 +19,21 @@
       "occupancyPercent": 59.3,
       "open": true,
       "full": false,
-      "lastUpdated": 1639497702
+      "lastUpdated": 1639497702,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
     },
     {
       "uuid": "23703a32-e280-4265-97d3-dc82c40e92e1",
       "name": "P+R Stationsstraat (Susteren)",
       "operator": "Nederlandse Spoorwegen",
+      "street": "Stationsstraat",
+      "houseNumber": "0",
+      "zipcode": "6114GB",
+      "city": "Susteren",
+      "province": "Limburg",
       "latitude": 51.059046,
       "longitude": 5.86266,
       "capacity": 62,
@@ -27,7 +41,11 @@
       "occupancyPercent": 1.6,
       "open": true,
       "full": false,
-      "lastUpdated": 1639497701
+      "lastUpdated": 1639497701,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
     }
   ]
 }

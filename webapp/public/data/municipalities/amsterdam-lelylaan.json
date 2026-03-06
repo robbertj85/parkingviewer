@@ -1,12 +1,17 @@
 {
   "municipality": "Amsterdam Lelylaan",
-  "generated_at": "2026-03-06T14:44:53.208422+00:00",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
   "facility_count": 1,
   "facilities": [
     {
       "uuid": "ac546da2-cc2b-4e1d-adf7-15bcecde9fff",
       "name": "P+R Comeniuslaan (Amsterdam Lelylaan)",
       "operator": "Nederlandse Spoorwegen",
+      "street": "Comeniusstraat",
+      "houseNumber": "10",
+      "zipcode": "1065BH",
+      "city": "Amsterdam",
+      "province": "",
       "latitude": 52.35919,
       "longitude": 4.83367,
       "capacity": 70,
@@ -14,7 +19,11 @@
       "occupancyPercent": 15.7,
       "open": true,
       "full": false,
-      "lastUpdated": 1772807784
+      "lastUpdated": 1772811387,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
     }
   ]
 }

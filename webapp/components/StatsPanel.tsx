@@ -150,19 +150,6 @@ export default function StatsPanel({ data, filters }: StatsPanelProps) {
         </div>
       </div>
 
-      {/* Top municipalities */}
-      <div>
-        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Top Gemeenten</h3>
-        <div className="space-y-0.5">
-          {stats.topMunicipalities.map(([name, count]) => (
-            <div key={name} className="flex justify-between text-xs">
-              <span className="text-gray-600 truncate">{name}</span>
-              <span className="text-gray-900 font-medium ml-2">{count}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Data source */}
       <div className="pt-2 border-t border-gray-100">
         <p className="text-xs text-gray-400">

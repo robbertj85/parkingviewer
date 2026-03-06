@@ -1,20 +1,29 @@
 {
   "municipality": "Odijkerweg, Zeist",
-  "generated_at": "2026-03-06T14:44:53.208422+00:00",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
   "facility_count": 1,
   "facilities": [
     {
       "uuid": "54612960-b8a6-4499-9f47-f7ae7c4fd2c8",
       "name": "P+R station Driebergen-Zeist",
       "operator": "Nederlandse Spoorwegen",
+      "street": "Stationsweg",
+      "houseNumber": "15",
+      "zipcode": "3972KA",
+      "city": "Driebergen-Rijsenburg",
+      "province": "",
       "latitude": 52.064487,
       "longitude": 5.258174,
       "capacity": 568,
-      "vacantSpaces": 347,
-      "occupancyPercent": 38.9,
+      "vacantSpaces": 357,
+      "occupancyPercent": 37.1,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808227
+      "lastUpdated": 1772811428,
+      "minimumHeightInMeters": 2.1,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
     }
   ]
 }

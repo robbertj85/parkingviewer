@@ -1,12 +1,17 @@
 {
   "municipality": "A50",
-  "generated_at": "2026-03-06T14:44:53.208422+00:00",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
   "facility_count": 1,
   "facilities": [
     {
       "uuid": "33ac0b4d-9a9d-4c39-85df-13293292f04b",
       "name": "afrit 24 Apeldoorn (A50)",
       "operator": "Apeldoorn",
+      "street": "",
+      "houseNumber": "",
+      "zipcode": "",
+      "city": "",
+      "province": "",
       "latitude": 52.208285,
       "longitude": 6.015765,
       "capacity": 90,
@@ -14,7 +19,11 @@
       "occupancyPercent": 14.4,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808000
+      "lastUpdated": 1772811300,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "Carpoolparkeren"
     }
   ]
 }

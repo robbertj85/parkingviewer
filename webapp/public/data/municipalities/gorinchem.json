@@ -1,12 +1,17 @@
 {
   "municipality": "Gorinchem",
-  "generated_at": "2026-03-06T14:44:53.208422+00:00",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
   "facility_count": 1,
   "facilities": [
     {
       "uuid": "1840ed29-74ce-46fc-8265-85c7c69c1acb",
       "name": "P+R Stationsweg (Gorinchem)",
       "operator": "Nederlandse Spoorwegen",
+      "street": "Stationsweg",
+      "houseNumber": "21",
+      "zipcode": "4205AA",
+      "city": "Gorinchem",
+      "province": "",
       "latitude": 51.83421,
       "longitude": 4.96932,
       "capacity": 122,
@@ -14,7 +19,11 @@
       "occupancyPercent": 11.5,
       "open": true,
       "full": false,
-      "lastUpdated": 1772807764
+      "lastUpdated": 1772811334,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
     }
   ]
 }

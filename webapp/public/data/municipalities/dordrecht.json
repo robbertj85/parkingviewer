@@ -1,12 +1,17 @@
 {
   "municipality": "Dordrecht",
-  "generated_at": "2026-03-06T14:44:53.208422+00:00",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
   "facility_count": 6,
   "facilities": [
     {
       "uuid": "fe585239-852e-4f52-84e8-56eda8239a8f",
       "name": "Garage Spuihaven (Dordrecht)",
       "operator": "Dordrecht",
+      "street": "Spuiboulevard",
+      "houseNumber": "304",
+      "zipcode": "3311GR",
+      "city": "Dordrecht",
+      "province": "Zuid-Holland",
       "latitude": 51.811689,
       "longitude": 4.662503,
       "capacity": 289,
@@ -14,12 +19,21 @@
       "occupancyPercent": 51.6,
       "open": true,
       "full": false,
-      "lastUpdated": "1744018320"
+      "lastUpdated": "1744018320",
+      "minimumHeightInMeters": 2.0,
+      "chargingPointCapacity": 2,
+      "disabledAccess": true,
+      "usage": "Garage parkeren"
     },
     {
       "uuid": "5b3d8f1d-67f8-499e-a35c-92f3b181bfa1",
       "name": "Garage Riedijkshaven (Dordrecht)",
       "operator": "Dordrecht",
+      "street": "Noorderstraat",
+      "houseNumber": "11",
+      "zipcode": "3311RB",
+      "city": "Dordrecht",
+      "province": "",
       "latitude": 51.817199,
       "longitude": 4.676626,
       "capacity": 20,
@@ -27,12 +41,21 @@
       "occupancyPercent": 35.0,
       "open": true,
       "full": false,
-      "lastUpdated": "1744018321"
+      "lastUpdated": "1744018321",
+      "minimumHeightInMeters": 2.0,
+      "chargingPointCapacity": 1,
+      "disabledAccess": true,
+      "usage": "Garage parkeren"
     },
     {
       "uuid": "01e2fd1b-550b-40e1-b9fe-5373a15d88a0",
       "name": "Parkeergarage Achterom",
       "operator": "Dordrecht",
+      "street": "Achterom",
+      "houseNumber": "56",
+      "zipcode": "3311GN",
+      "city": "Dordrecht",
+      "province": "Zuid-Holland",
       "latitude": 51.811689,
       "longitude": 4.662503,
       "capacity": 275,
@@ -40,12 +63,21 @@
       "occupancyPercent": 21.1,
       "open": true,
       "full": false,
-      "lastUpdated": "1744018321"
+      "lastUpdated": "1744018321",
+      "minimumHeightInMeters": 2.0,
+      "chargingPointCapacity": 2,
+      "disabledAccess": true,
+      "usage": "Garage parkeren"
     },
     {
       "uuid": "367449da-07de-4eec-be6e-79719ca533f8",
       "name": "Garage Energiehuis (Dordrecht)",
       "operator": "Dordrecht",
+      "street": "Lijnbaan",
+      "houseNumber": "198",
+      "zipcode": "3311SM",
+      "city": "Dorderecht",
+      "province": "",
       "latitude": 51.815974,
       "longitude": 4.679577,
       "capacity": 276,
@@ -53,12 +85,21 @@
       "occupancyPercent": 25.7,
       "open": true,
       "full": false,
-      "lastUpdated": "1744018353"
+      "lastUpdated": "1744018353",
+      "minimumHeightInMeters": 2.0,
+      "chargingPointCapacity": 5,
+      "disabledAccess": true,
+      "usage": "Garage parkeren"
     },
     {
       "uuid": "1558c63d-0d97-40f3-9a0f-5f11e65875d7",
       "name": "Garage Veemarkt (Dordrecht)",
       "operator": "Dordrecht",
+      "street": "Van Godewijckstraat",
+      "houseNumber": "13",
+      "zipcode": "3311GX",
+      "city": "Dordrecht",
+      "province": "",
       "latitude": 51.811779,
       "longitude": 4.66003,
       "capacity": 528,
@@ -66,20 +107,33 @@
       "occupancyPercent": 0.0,
       "open": true,
       "full": false,
-      "lastUpdated": "1674118048"
+      "lastUpdated": "1674118048",
+      "minimumHeightInMeters": 2.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "Garage parkeren"
     },
     {
       "uuid": "5ad7a1ad-ec96-4e5c-9356-a5809078aada",
       "name": "P+R Markettenweg (Dordrecht)",
       "operator": "Nederlandse Spoorwegen",
+      "street": "Markettenweg",
+      "houseNumber": "50",
+      "zipcode": "3314JE",
+      "city": "Dordrecht",
+      "province": "",
       "latitude": 51.80662,
       "longitude": 4.66915,
       "capacity": 113,
-      "vacantSpaces": 71,
-      "occupancyPercent": 37.2,
+      "vacantSpaces": 80,
+      "occupancyPercent": 29.2,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808014
+      "lastUpdated": 1772811175,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
     }
   ]
 }

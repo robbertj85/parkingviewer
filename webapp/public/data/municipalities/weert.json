@@ -1,20 +1,29 @@
 {
   "municipality": "Weert",
-  "generated_at": "2026-03-06T14:44:53.208422+00:00",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
   "facility_count": 1,
   "facilities": [
     {
       "uuid": "2190c694-e24f-4b6c-a10b-d84b90945078",
       "name": "P+R Parallelweg (Weert)",
       "operator": "Nederlandse Spoorwegen",
+      "street": "Parallelweg",
+      "houseNumber": "0",
+      "zipcode": "6001HM",
+      "city": "Weert",
+      "province": "",
       "latitude": 51.24941,
       "longitude": 5.69808,
       "capacity": 279,
-      "vacantSpaces": 87,
-      "occupancyPercent": 68.8,
+      "vacantSpaces": 77,
+      "occupancyPercent": 72.4,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808243
+      "lastUpdated": 1772811474,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
     }
   ]
 }

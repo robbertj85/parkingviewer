@@ -1,20 +1,29 @@
 {
   "municipality": "Sittard",
-  "generated_at": "2026-03-06T14:44:53.208422+00:00",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
   "facility_count": 1,
   "facilities": [
     {
       "uuid": "46fa33ae-878c-4afa-b231-9930ee1fb073",
       "name": "P+R Transferium (Sittard)",
       "operator": "Nederlandse Spoorwegen",
+      "street": "Geerweg",
+      "houseNumber": "4",
+      "zipcode": "6135KC",
+      "city": "Sittard",
+      "province": "",
       "latitude": 51.001739,
       "longitude": 5.857042,
       "capacity": 495,
-      "vacantSpaces": 223,
-      "occupancyPercent": 54.9,
+      "vacantSpaces": 241,
+      "occupancyPercent": 51.3,
       "open": true,
       "full": false,
-      "lastUpdated": 1772807609
+      "lastUpdated": 1772811491,
+      "minimumHeightInMeters": 1.9,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
     }
   ]
 }

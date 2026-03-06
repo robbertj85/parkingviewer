@@ -1,0 +1,51 @@
+{
+  "municipality": "Ede",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
+  "facility_count": 2,
+  "facilities": [
+    {
+      "uuid": "307d9fdb-0c8a-4362-943d-aa33adecaa14",
+      "name": "P + R station Veenendaal-De Klomp Zuid",
+      "operator": "Nederlandse Spoorwegen",
+      "street": "Rondweg De Klomp",
+      "houseNumber": "0",
+      "zipcode": "6745XM",
+      "city": "De Klomp",
+      "province": "",
+      "latitude": 52.045486,
+      "longitude": 5.574509,
+      "capacity": 105,
+      "vacantSpaces": 100,
+      "occupancyPercent": 4.8,
+      "open": true,
+      "full": false,
+      "lastUpdated": 1766561808,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
+    },
+    {
+      "uuid": "8bfefa99-a526-4ce8-b4e0-236d6b19bb23",
+      "name": "P + R station Veenendaal-De Klomp Noord",
+      "operator": "Nederlandse Spoorwegen",
+      "street": "Dokter Hoolboomweg",
+      "houseNumber": "0",
+      "zipcode": "6745XM",
+      "city": "De Klomp",
+      "province": "",
+      "latitude": 52.046039,
+      "longitude": 5.574138,
+      "capacity": 257,
+      "vacantSpaces": 226,
+      "occupancyPercent": 12.1,
+      "open": true,
+      "full": false,
+      "lastUpdated": 1766561808,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
+    }
+  ]
+}

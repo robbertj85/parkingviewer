@@ -1,33 +1,51 @@
 {
   "municipality": "Roermond",
-  "generated_at": "2026-03-06T14:44:53.208422+00:00",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
   "facility_count": 2,
   "facilities": [
     {
       "uuid": "39c7e31a-5a22-4c4a-935f-482feaf65823",
       "name": "P+R Veeladingstraat (Roermond)",
       "operator": "Nederlandse Spoorwegen",
+      "street": "Veeladingstraat",
+      "houseNumber": "0",
+      "zipcode": "6041HW",
+      "city": "Roermond",
+      "province": "",
       "latitude": 51.18948,
       "longitude": 5.99224,
       "capacity": 81,
-      "vacantSpaces": 37,
-      "occupancyPercent": 54.3,
+      "vacantSpaces": 40,
+      "occupancyPercent": 50.6,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808155
+      "lastUpdated": 1772811286,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
     },
     {
       "uuid": "27b012c7-0ae9-4607-99ba-c7ee3c2b21fe",
       "name": "P+R Godsweerdersingel (Roermond)",
       "operator": "Nederlandse Spoorwegen",
+      "street": "Godsweerderssingel",
+      "houseNumber": "0",
+      "zipcode": "6041GJ",
+      "city": "Roermond",
+      "province": "",
       "latitude": 51.19466,
       "longitude": 5.99458,
       "capacity": 83,
-      "vacantSpaces": 62,
-      "occupancyPercent": 25.3,
+      "vacantSpaces": 69,
+      "occupancyPercent": 16.9,
       "open": true,
       "full": false,
-      "lastUpdated": 1772807719
+      "lastUpdated": 1772811466,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
     }
   ]
 }

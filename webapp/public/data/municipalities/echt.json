@@ -1,12 +1,17 @@
 {
   "municipality": "Echt",
-  "generated_at": "2026-03-06T14:44:53.208422+00:00",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
   "facility_count": 2,
   "facilities": [
     {
       "uuid": "54544081-ae6b-4e18-bbf3-6833becce81f",
       "name": "P+R Stationsweg (Echt)",
       "operator": "Nederlandse Spoorwegen",
+      "street": "Stationsweg",
+      "houseNumber": "0",
+      "zipcode": "6101HK",
+      "city": "Echt",
+      "province": "Limburg",
       "latitude": 51.099404,
       "longitude": 5.877922,
       "capacity": 98,
@@ -14,12 +19,21 @@
       "occupancyPercent": 16.3,
       "open": true,
       "full": false,
-      "lastUpdated": 1639497702
+      "lastUpdated": 1639497702,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
     },
     {
       "uuid": "9706dda7-3909-4b75-be28-b3d4e9ee09f7",
       "name": "P+R Stationsweg (Echt)",
       "operator": "Nederlandse Spoorwegen",
+      "street": "Stationsweg",
+      "houseNumber": "0",
+      "zipcode": "6101HK",
+      "city": "Echt",
+      "province": "Limburg",
       "latitude": 51.100505,
       "longitude": 5.878418,
       "capacity": 54,
@@ -27,7 +41,11 @@
       "occupancyPercent": 9.3,
       "open": true,
       "full": false,
-      "lastUpdated": 1639497701
+      "lastUpdated": 1639497701,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
     }
   ]
 }

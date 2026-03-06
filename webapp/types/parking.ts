@@ -106,8 +106,8 @@ export function getOccupancyColor(pct: number | null): string {
   if (pct >= 95) return '#dc2626';   // red
   if (pct >= 80) return '#f97316';   // orange
   if (pct >= 60) return '#eab308';   // yellow
-  if (pct >= 30) return '#22c55e';   // green
-  return '#16a34a';                   // dark green
+  if (pct >= 30) return '#3b82f6';   // blue
+  return '#2563eb';                   // dark blue
 }
 
 export function getOccupancyLabel(pct: number | null): string {

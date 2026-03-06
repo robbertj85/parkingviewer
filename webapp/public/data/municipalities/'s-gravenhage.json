@@ -1,0 +1,51 @@
+{
+  "municipality": "'s-Gravenhage",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
+  "facility_count": 2,
+  "facilities": [
+    {
+      "uuid": "9bf549d0-916f-49e5-acd9-4083e2328056",
+      "name": "Garage Turfmarkt (Den Haag)",
+      "operator": "'s-Gravenhage",
+      "street": "",
+      "houseNumber": "",
+      "zipcode": "",
+      "city": "",
+      "province": "",
+      "latitude": 52.07887586,
+      "longitude": 4.32029658,
+      "capacity": null,
+      "vacantSpaces": null,
+      "occupancyPercent": null,
+      "open": null,
+      "full": null,
+      "lastUpdated": null,
+      "minimumHeightInMeters": null,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "Garage parkeren"
+    },
+    {
+      "uuid": "76b80f7c-2455-4eab-ba88-d4c2eaa1e7e8",
+      "name": "DEN HAAG-Binck City Park",
+      "operator": "Q-Park Nederland BV",
+      "street": "",
+      "houseNumber": "",
+      "zipcode": "",
+      "city": "",
+      "province": "",
+      "latitude": 52.06998705,
+      "longitude": 4.37383044,
+      "capacity": 400,
+      "vacantSpaces": 400,
+      "occupancyPercent": 0.0,
+      "open": true,
+      "full": false,
+      "lastUpdated": 1772811503,
+      "minimumHeightInMeters": null,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "Garage parkeren"
+    }
+  ]
+}

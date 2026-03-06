@@ -1,0 +1,29 @@
+{
+  "municipality": "Marnix",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
+  "facility_count": 1,
+  "facilities": [
+    {
+      "uuid": "74a6b9e5-dad6-4c18-a26e-7073d12c92a0",
+      "name": "Garage Singelgracht (Marnix)",
+      "operator": "Amsterdam",
+      "street": "Frederik Hendrikplantsoen",
+      "houseNumber": "25",
+      "zipcode": "1015ZN",
+      "city": "Amsterdam",
+      "province": "Noord-Holland",
+      "latitude": 52.37836,
+      "longitude": 4.87785,
+      "capacity": 800,
+      "vacantSpaces": 157,
+      "occupancyPercent": 80.4,
+      "open": true,
+      "full": false,
+      "lastUpdated": 1772811477,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "Garage parkeren"
+    }
+  ]
+}

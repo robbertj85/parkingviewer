@@ -1,20 +1,29 @@
 {
   "municipality": "Hengelo",
-  "generated_at": "2026-03-06T14:44:53.208422+00:00",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
   "facility_count": 1,
   "facilities": [
     {
       "uuid": "222fa1c9-20df-433b-ba27-5c7c7c128f3d",
       "name": "P+R Industrieplein (Hengelo)",
       "operator": "Nederlandse Spoorwegen",
+      "street": "Gieskesstraat",
+      "houseNumber": "0",
+      "zipcode": "7553LL",
+      "city": "Hengelo",
+      "province": "",
       "latitude": 52.260827,
       "longitude": 6.795602,
       "capacity": 256,
-      "vacantSpaces": 245,
-      "occupancyPercent": 4.3,
+      "vacantSpaces": 243,
+      "occupancyPercent": 5.1,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808167
+      "lastUpdated": 1772811463,
+      "minimumHeightInMeters": 2.1,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
     }
   ]
 }

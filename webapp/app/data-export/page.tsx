@@ -11,7 +11,8 @@ export default function DataExportPage() {
   const [muniIndex, setMuniIndex] = useState<MunicipalityIndex | null>(null);
   const [loading, setLoading] = useState(true);
   const [downloading, setDownloading] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'download' | 'municipality' | 'history'>('download');
+  const [dataMode, setDataMode] = useState<'realtime' | 'history'>('realtime');
+  const [activeTab, setActiveTab] = useState<'download' | 'municipality'>('download');
   const [muniSearch, setMuniSearch] = useState('');
   const [selectedDate, setSelectedDate] = useState(() => {
     const d = new Date();
@@ -79,7 +80,7 @@ export default function DataExportPage() {
         URL.revokeObjectURL(a.href);
       } else {
         // CSV
-        const headers = ['uuid', 'name', 'municipality', 'operator', 'latitude', 'longitude', 'capacity', 'vacantSpaces', 'occupancyPercent', 'open', 'full', 'lastUpdated'];
+        const headers = ['uuid', 'name', 'municipality', 'operator', 'street', 'houseNumber', 'zipcode', 'city', 'province', 'latitude', 'longitude', 'capacity', 'vacantSpaces', 'occupancyPercent', 'open', 'full', 'lastUpdated', 'minimumHeightInMeters', 'chargingPointCapacity', 'disabledAccess', 'usage'];
         const rows = features.map((f: { properties: Record<string, unknown>; geometry: { coordinates: number[] } }) => {
           const p = f.properties;
           return headers.map((h) => {
@@ -126,10 +127,10 @@ export default function DataExportPage() {
   };
 
   useEffect(() => {
-    if (activeTab === 'history') {
+    if (dataMode === 'history') {
       loadHistory();
     }
-  }, [activeTab, selectedDate]);
+  }, [dataMode, selectedDate]);
 
   const filteredMunis = muniIndex?.municipalities.filter(
     (m) => m.name.toLowerCase().includes(muniSearch.toLowerCase())
@@ -171,12 +172,27 @@ export default function DataExportPage() {
           </div>
         )}
 
-        {/* Tabs */}
+        {/* Data mode toggle */}
+        <div className="flex gap-1 mb-4 bg-white rounded-lg shadow-sm p-1">
+          <button
+            onClick={() => setDataMode('realtime')}
+            className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition ${dataMode === 'realtime' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}
+          >
+            Real-time data
+          </button>
+          <button
+            onClick={() => setDataMode('history')}
+            className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition ${dataMode === 'history' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}
+          >
+            Historische data
+          </button>
+        </div>
+
+        {/* Scope tabs */}
         <div className="flex gap-1 mb-6 bg-white rounded-lg shadow-sm p-1">
           {[
             { key: 'download' as const, label: 'Nederland (volledig)' },
             { key: 'municipality' as const, label: 'Per gemeente' },
-            { key: 'history' as const, label: 'Historische data' },
           ].map((tab) => (
             <button
               key={tab.key}
@@ -192,8 +208,8 @@ export default function DataExportPage() {
           ))}
         </div>
 
-        {/* Download tab - full Netherlands */}
-        {activeTab === 'download' && (
+        {/* REAL-TIME MODE */}
+        {dataMode === 'realtime' && activeTab === 'download' && (
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h2 className="text-lg font-medium text-gray-900 mb-4">Download parkeerdata Nederland</h2>
             <p className="text-sm text-gray-500 mb-6">
@@ -223,8 +239,7 @@ export default function DataExportPage() {
           </div>
         )}
 
-        {/* Municipality tab */}
-        {activeTab === 'municipality' && (
+        {dataMode === 'realtime' && activeTab === 'municipality' && (
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h2 className="text-lg font-medium text-gray-900 mb-4">Download per gemeente</h2>
             <input
@@ -264,14 +279,16 @@ export default function DataExportPage() {
           </div>
         )}
 
-        {/* History tab */}
-        {activeTab === 'history' && (
+        {/* HISTORY MODE */}
+        {dataMode === 'history' && (
           <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Historische bezettingsdata</h2>
+            <h2 className="text-lg font-medium text-gray-900 mb-4">
+              Historische data {activeTab === 'municipality' ? 'per gemeente' : 'Nederland'}
+            </h2>
             <p className="text-sm text-gray-500 mb-4">
-              Bekijk en download uurlijkse snapshots van de bezettingsdata. Data wordt elk uur opgeslagen.
+              Download uurlijkse snapshots van de bezettingsdata. Selecteer een datum om te bekijken of te downloaden.
             </p>
-            <div className="flex items-center gap-4 mb-6">
+            <div className="flex flex-wrap items-center gap-4 mb-6">
               <label className="text-sm font-medium text-gray-700">Datum:</label>
               <input
                 type="date"
@@ -296,6 +313,73 @@ export default function DataExportPage() {
                 </button>
               )}
             </div>
+
+            {/* Municipality filter for history */}
+            {activeTab === 'municipality' && (
+              <div className="mb-6">
+                <input
+                  type="text"
+                  placeholder="Zoek gemeente..."
+                  value={muniSearch}
+                  onChange={(e) => setMuniSearch(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-200 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <div className="grid sm:grid-cols-3 lg:grid-cols-4 gap-1.5 max-h-40 overflow-y-auto custom-scrollbar">
+                  {filteredMunis.map((muni) => (
+                    <button
+                      key={muni.slug}
+                      onClick={async () => {
+                        if (!historyData) return;
+                        setDownloading(muni.slug);
+                        try {
+                          // Fetch municipality file to get facility UUIDs
+                          const muniRes = await fetch(`/data/municipalities/${muni.slug}.json`);
+                          if (!muniRes.ok) throw new Error('Municipality data not found');
+                          const muniData = await muniRes.json();
+                          const uuids = new Set((muniData.facilities || []).map((f: { uuid: string }) => f.uuid));
+
+                          // Filter snapshot data to only include this municipality's facilities
+                          const filtered = {
+                            ...historyData,
+                            municipality: muni.name,
+                            snapshots: Object.fromEntries(
+                              Object.entries(historyData.snapshots).map(([hour, snap]) => [
+                                hour,
+                                {
+                                  ...snap,
+                                  facility_count: Object.keys(snap.facilities).filter(id => uuids.has(id)).length,
+                                  facilities: Object.fromEntries(
+                                    Object.entries(snap.facilities).filter(([id]) => uuids.has(id))
+                                  ),
+                                },
+                              ])
+                            ),
+                          };
+                          const blob = new Blob([JSON.stringify(filtered, null, 2)], { type: 'application/json' });
+                          const a = document.createElement('a');
+                          a.href = URL.createObjectURL(blob);
+                          a.download = `parkeerdata-${muni.slug}-${selectedDate}.json`;
+                          a.click();
+                          URL.revokeObjectURL(a.href);
+                        } catch (err) {
+                          console.error('Download failed:', err);
+                          alert('Download mislukt.');
+                        } finally {
+                          setDownloading(null);
+                        }
+                      }}
+                      disabled={downloading !== null || !historyData}
+                      className="flex items-center justify-between p-2 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition text-left disabled:opacity-50 text-sm"
+                    >
+                      <span className="font-medium text-gray-900">{muni.name}</span>
+                      <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                      </svg>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {historyLoading ? (
               <div className="text-center py-8 text-gray-500">Laden...</div>

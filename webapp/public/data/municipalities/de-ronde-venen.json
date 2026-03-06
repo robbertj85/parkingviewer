@@ -1,0 +1,29 @@
+{
+  "municipality": "De Ronde Venen",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
+  "facility_count": 1,
+  "facilities": [
+    {
+      "uuid": "80e6904b-0183-46dc-9d75-5238487d89ad",
+      "name": "P + R staton Abcoude",
+      "operator": "Nederlandse Spoorwegen",
+      "street": "Spoorlaan",
+      "houseNumber": "0",
+      "zipcode": "1391TA",
+      "city": "Abcoude",
+      "province": "",
+      "latitude": 52.27757,
+      "longitude": 4.977115,
+      "capacity": 50,
+      "vacantSpaces": null,
+      "occupancyPercent": null,
+      "open": null,
+      "full": null,
+      "lastUpdated": null,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
+    }
+  ]
+}

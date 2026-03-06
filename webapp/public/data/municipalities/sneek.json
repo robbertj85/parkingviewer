@@ -1,20 +1,29 @@
 {
   "municipality": "Sneek",
-  "generated_at": "2026-03-06T14:44:53.208422+00:00",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
   "facility_count": 1,
   "facilities": [
     {
       "uuid": "5da92d12-8d50-439a-a900-2cde0d600a83",
       "name": "P+R Sneek (Sneek)",
       "operator": "Nederlandse Spoorwegen",
+      "street": "Kanaalstraat",
+      "houseNumber": "22",
+      "zipcode": "8601GA",
+      "city": "Sneek",
+      "province": "",
       "latitude": 53.031308,
       "longitude": 5.650877,
       "capacity": 55,
-      "vacantSpaces": 45,
-      "occupancyPercent": 18.2,
+      "vacantSpaces": 49,
+      "occupancyPercent": 10.9,
       "open": true,
       "full": false,
-      "lastUpdated": 1772807489
+      "lastUpdated": 1772811394,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
     }
   ]
 }

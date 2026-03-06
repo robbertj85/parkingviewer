@@ -1,12 +1,17 @@
 {
   "municipality": "Klimmen Ransdaal",
-  "generated_at": "2026-03-06T14:44:53.208422+00:00",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
   "facility_count": 1,
   "facilities": [
     {
       "uuid": "f7e4a75c-79a2-41c7-b12e-aa88bff379f1",
       "name": "P+R Mareheiweg (Klimmen Ransdaal)",
       "operator": "Nederlandse Spoorwegen",
+      "street": "Mareheiweg",
+      "houseNumber": "0",
+      "zipcode": "6343EL",
+      "city": "Ransdaal",
+      "province": "Limburg",
       "latitude": 50.866523,
       "longitude": 5.890046,
       "capacity": 28,
@@ -14,7 +19,11 @@
       "occupancyPercent": 0.0,
       "open": true,
       "full": false,
-      "lastUpdated": 1639497702
+      "lastUpdated": 1639497702,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
     }
   ]
 }

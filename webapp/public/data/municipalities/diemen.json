@@ -1,12 +1,17 @@
 {
   "municipality": "Diemen",
-  "generated_at": "2026-03-06T14:44:53.208422+00:00",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
   "facility_count": 1,
   "facilities": [
     {
       "uuid": "40367d76-9ba1-4257-b954-f5f58edf144e",
       "name": "P+R Station Diemen (Diemen)",
       "operator": "Diemen",
+      "street": "Harmonielaan",
+      "houseNumber": "0",
+      "zipcode": "1111PD",
+      "city": "Diemen",
+      "province": "",
       "latitude": 52.345229,
       "longitude": 4.967026,
       "capacity": 112,
@@ -14,7 +19,11 @@
       "occupancyPercent": 25.9,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808067
+      "lastUpdated": 1772810662,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
     }
   ]
 }

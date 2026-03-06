@@ -1,20 +1,29 @@
 {
   "municipality": "Oss",
-  "generated_at": "2026-03-06T14:44:53.208422+00:00",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
   "facility_count": 1,
   "facilities": [
     {
       "uuid": "3cc2d8e4-53ef-48ba-8dda-c97047d16fe1",
       "name": "P+R Gasstraat (Oss)",
       "operator": "Nederlandse Spoorwegen",
+      "street": "Gasstraat",
+      "houseNumber": "0",
+      "zipcode": "5349AV",
+      "city": "Oss",
+      "province": "",
       "latitude": 51.76499,
       "longitude": 5.531281,
       "capacity": 234,
-      "vacantSpaces": 171,
-      "occupancyPercent": 26.9,
+      "vacantSpaces": 182,
+      "occupancyPercent": 22.2,
       "open": true,
       "full": false,
-      "lastUpdated": 1772807850
+      "lastUpdated": 1772811496,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
     }
   ]
 }

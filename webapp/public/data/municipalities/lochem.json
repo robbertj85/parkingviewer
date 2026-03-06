@@ -1,33 +1,51 @@
 {
   "municipality": "Lochem",
-  "generated_at": "2026-03-06T14:44:53.208422+00:00",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
   "facility_count": 2,
   "facilities": [
     {
       "uuid": "0e9c5738-93b1-43fe-8f57-6f1066b5118a",
       "name": "Graafschapterrein (Lochem)",
       "operator": "Lochem",
+      "street": "De Graafschap",
+      "houseNumber": "0",
+      "zipcode": "7241DK",
+      "city": "Lochem",
+      "province": "",
       "latitude": 52.16279,
       "longitude": 6.41945,
       "capacity": 170,
-      "vacantSpaces": 35,
-      "occupancyPercent": 79.4,
+      "vacantSpaces": 46,
+      "occupancyPercent": 72.9,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808000
+      "lastUpdated": 1772811300,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "Terreinparkeren"
     },
     {
       "uuid": "ddf76a3f-a13d-492f-8dd2-374a52c1a506",
       "name": "Mauritsweg (Lochem)",
       "operator": "Lochem",
+      "street": "Mauritsweg",
+      "houseNumber": "15",
+      "zipcode": "7241BN",
+      "city": "Lochem",
+      "province": "",
       "latitude": 52.161736,
       "longitude": 6.411232,
       "capacity": 200,
-      "vacantSpaces": 80,
-      "occupancyPercent": 60.0,
+      "vacantSpaces": 92,
+      "occupancyPercent": 54.0,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808000
+      "lastUpdated": 1772811300,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "Terreinparkeren"
     }
   ]
 }

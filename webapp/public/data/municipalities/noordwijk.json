@@ -1,20 +1,51 @@
 {
   "municipality": "Noordwijk",
-  "generated_at": "2026-03-06T14:44:53.208422+00:00",
-  "facility_count": 1,
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
+  "facility_count": 2,
   "facilities": [
     {
       "uuid": "8c237822-2d60-4446-b5cd-8f33cccb26fc",
       "name": "Terrein Vomar Bomstraat (Noordwijk)",
       "operator": "Centrum Parking",
+      "street": "Bomstraat",
+      "houseNumber": "15",
+      "zipcode": "2202GH",
+      "city": "Noordwijk",
+      "province": "Zuid-Holland",
       "latitude": 52.243867,
       "longitude": 4.431611,
       "capacity": 240,
-      "vacantSpaces": 170,
-      "occupancyPercent": 29.2,
+      "vacantSpaces": 151,
+      "occupancyPercent": 37.1,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808030
+      "lastUpdated": 1772811330,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "Terreinparkeren"
+    },
+    {
+      "uuid": "da95ab75-7e5e-438d-8bfb-f3eb0d37dd44",
+      "name": "Straatparkeren Wantveld (Noordwijk)",
+      "operator": "Noordwijk",
+      "street": "",
+      "houseNumber": "",
+      "zipcode": "",
+      "city": "",
+      "province": "",
+      "latitude": 52.25016152,
+      "longitude": 4.43828954,
+      "capacity": 529,
+      "vacantSpaces": 388,
+      "occupancyPercent": 26.7,
+      "open": true,
+      "full": false,
+      "lastUpdated": 1762942831,
+      "minimumHeightInMeters": null,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "Betaald parkeren"
     }
   ]
 }

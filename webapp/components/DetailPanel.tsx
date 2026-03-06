@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ParkingFeature, DailySnapshots, getOccupancyColor, getOccupancyLabel } from '@/types/parking';
 
 interface DetailPanelProps {
   feature: ParkingFeature;
   onClose: () => void;
+  mobile?: boolean;
 }
 
 interface StaticInfo {
@@ -17,11 +18,81 @@ interface StaticInfo {
   chargingPoints?: number;
 }
 
-export default function DetailPanel({ feature, onClose }: DetailPanelProps) {
+function MiniMapView({ lat, lng, satellite, uuid }: { lat: number; lng: number; satellite: boolean; uuid: string }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<unknown>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    let cancelled = false;
+    import('leaflet').then((L) => {
+      if (cancelled || !containerRef.current) return;
+
+      if (mapInstanceRef.current) {
+        (mapInstanceRef.current as L.Map).remove();
+        mapInstanceRef.current = null;
+      }
+
+      const map = L.map(containerRef.current, {
+        center: [lat, lng],
+        zoom: 17,
+        zoomControl: true,
+        attributionControl: false,
+      });
+
+      const tileUrl = satellite
+        ? 'https://service.pdok.nl/hwh/luchtfotorgb/wmts/v1_0/Actueel_orthoHR/EPSG:3857/{z}/{x}/{y}.jpeg'
+        : 'https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/standaard/EPSG:3857/{z}/{x}/{y}.png';
+
+      L.tileLayer(tileUrl, { maxZoom: 19 }).addTo(map);
+
+      const icon = L.divIcon({
+        className: 'parking-marker',
+        html: '<div style="width:14px;height:14px;background:#2563eb;border:2px solid white;border-radius:50%;box-shadow:0 2px 4px rgba(0,0,0,0.3);"></div>',
+        iconSize: [14, 14],
+        iconAnchor: [7, 7],
+      });
+      L.marker([lat, lng], { icon }).addTo(map);
+
+      // Leaflet needs a tick to measure the container size
+      setTimeout(() => {
+        if (!cancelled) map.invalidateSize();
+      }, 100);
+
+      mapInstanceRef.current = map;
+    });
+
+    return () => {
+      cancelled = true;
+      if (mapInstanceRef.current) {
+        (mapInstanceRef.current as L.Map).remove();
+        mapInstanceRef.current = null;
+      }
+    };
+  }, [lat, lng, satellite, uuid]);
+
+  return (
+    <div ref={containerRef} className="rounded-lg overflow-hidden border border-gray-200" style={{ height: '144px' }} />
+  );
+}
+
+export default function DetailPanel({ feature, onClose, mobile }: DetailPanelProps) {
   const [staticInfo, setStaticInfo] = useState<StaticInfo | null>(null);
   const [staticLoading, setStaticLoading] = useState(false);
   const [todayData, setTodayData] = useState<DailySnapshots | null>(null);
+  const [historyDays, setHistoryDays] = useState<DailySnapshots[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [chartMode, setChartMode] = useState<'pct' | 'abs'>('pct');
+  const [showStaticJson, setShowStaticJson] = useState(false);
+  const [showDynamicJson, setShowDynamicJson] = useState(false);
+  const [staticJson, setStaticJson] = useState<string | null>(null);
+  const [dynamicJson, setDynamicJson] = useState<string | null>(null);
+  const [staticJsonLoading, setStaticJsonLoading] = useState(false);
+  const [dynamicJsonLoading, setDynamicJsonLoading] = useState(false);
+  const [miniMapSatellite, setMiniMapSatellite] = useState(false);
+  const [selectedHour, setSelectedHour] = useState<number | null>(null);
+  const [timeRange, setTimeRange] = useState<'24h' | '7d' | '30d' | '1y'>('7d');
 
   const props = feature.properties;
   const [lng, lat] = feature.geometry.coordinates;
@@ -31,6 +102,7 @@ export default function DetailPanel({ feature, onClose }: DetailPanelProps) {
   // Fetch static API data for address info
   useEffect(() => {
     setStaticInfo(null);
+    setSelectedHour(null);
     setStaticLoading(true);
     fetch(`https://npropendata.rdw.nl/parkingdata/v2/static/${props.uuid}`, {
       headers: { 'Accept': 'application/json' },
@@ -72,45 +144,143 @@ export default function DetailPanel({ feature, onClose }: DetailPanelProps) {
         }
 
         setStaticInfo({ address, city, zipcode, openingTimes, minHeight, chargingPoints });
-      })
-      .catch(() => {})
-      .finally(() => setStaticLoading(false));
-  }, [props.uuid]);
 
-  // Fetch today's hourly data
+        // If no address from static API, try PDOK reverse geocoding
+        if (!address) {
+          fetch(`https://api.pdok.nl/bzk/locatieserver/search/v3_1/reverse?lon=${lng}&lat=${lat}&rows=1&fl=*`)
+            .then(r => r.ok ? r.json() : null)
+            .then(data => {
+              const doc = data?.response?.docs?.[0];
+              if (doc) {
+                setStaticInfo(prev => prev ? {
+                  ...prev,
+                  address: doc.straatnaam ? `${doc.straatnaam}${doc.huisnummer ? ' ' + doc.huisnummer : ''}` : prev.address,
+                  city: doc.woonplaatsnaam || prev.city,
+                  zipcode: doc.postcode || prev.zipcode,
+                } : prev);
+              }
+            })
+            .catch(() => {});
+        }
+      })
+      .catch(() => {
+        // Static API failed entirely, try PDOK reverse geocoding
+        fetch(`https://api.pdok.nl/bzk/locatieserver/search/v3_1/reverse?lon=${lng}&lat=${lat}&rows=1&fl=*`)
+          .then(r => r.ok ? r.json() : null)
+          .then(data => {
+            const doc = data?.response?.docs?.[0];
+            if (doc) {
+              setStaticInfo({
+                address: doc.straatnaam ? `${doc.straatnaam}${doc.huisnummer ? ' ' + doc.huisnummer : ''}` : '',
+                city: doc.woonplaatsnaam || '',
+                zipcode: doc.postcode || '',
+              });
+            }
+          })
+          .catch(() => {});
+      })
+      .finally(() => setStaticLoading(false));
+  }, [props.uuid, lat, lng]);
+
+  // Fetch today's + history hourly data based on time range
   useEffect(() => {
     setTodayData(null);
+    setHistoryDays([]);
     setHistoryLoading(true);
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    fetch(`/data/snapshots/${year}/${month}/${day}.json`)
-      .then((r) => r.ok ? r.json() : null)
-      .then((data) => setTodayData(data))
-      .catch(() => {})
-      .finally(() => setHistoryLoading(false));
-  }, [props.uuid]);
 
-  // Build hourly chart data
+    const rangeDays = timeRange === '24h' ? 1 : timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : 365;
+    const dates: string[] = [];
+    for (let i = 0; i <= rangeDays; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      dates.push(`${y}/${m}/${day}`);
+    }
+
+    Promise.all(
+      dates.map((datePath) =>
+        fetch(`/data/snapshots/${datePath}.json`)
+          .then((r) => (r.ok ? r.json() : null))
+          .catch(() => null)
+      )
+    ).then((results) => {
+      const valid = results.filter(Boolean) as DailySnapshots[];
+      if (valid.length > 0) {
+        setTodayData(valid[0]); // most recent = today
+      }
+      if (valid.length > 1) {
+        setHistoryDays(valid.slice(1)); // past days
+      }
+      setHistoryLoading(false);
+    });
+  }, [props.uuid, timeRange]);
+
+  // Helper: extract occupancy data from a snapshot for this facility
+  const extractData = (snapshot: DailySnapshots['snapshots'][string] | undefined): { pct: number; occupied: number; capacity: number } | null => {
+    if (!snapshot) return null;
+    const fac = snapshot.facilities[props.uuid];
+    if (fac && fac.c && fac.c > 0 && fac.v !== undefined) {
+      const occupied = fac.c - fac.v;
+      return { pct: Math.round((occupied / fac.c) * 100), occupied, capacity: fac.c };
+    }
+    return null;
+  };
+
+  // Build hourly chart data with historical averages
   const hourlyData = (() => {
-    if (!todayData) return null;
-    const hours: { hour: string; pct: number | null }[] = [];
+    if (!todayData && historyDays.length === 0) return null;
+    const hours: { hour: string; pct: number | null; occupied: number | null; capacity: number | null; histAvg: number | null; isLatest: boolean }[] = [];
+    let lastDataHour = -1;
+
     for (let h = 0; h < 24; h++) {
       const key = h.toString().padStart(2, '0');
-      const snapshot = todayData.snapshots[key];
-      if (snapshot) {
-        const fac = snapshot.facilities[props.uuid];
-        if (fac && fac.c && fac.c > 0 && fac.v !== undefined) {
-          hours.push({ hour: key, pct: Math.round(((fac.c - fac.v) / fac.c) * 100) });
-        } else {
-          hours.push({ hour: key, pct: null });
-        }
-      } else {
-        hours.push({ hour: key, pct: null });
+
+      // Today's value
+      const todayResult = todayData ? extractData(todayData.snapshots[key]) : null;
+      if (todayResult !== null) lastDataHour = h;
+
+      // Historical average from past days
+      const histValues: number[] = [];
+      for (const day of historyDays) {
+        const val = extractData(day.snapshots[key]);
+        if (val !== null) histValues.push(val.pct);
       }
+      const histAvg = histValues.length > 0
+        ? Math.round(histValues.reduce((a, b) => a + b, 0) / histValues.length)
+        : null;
+
+      hours.push({
+        hour: key,
+        pct: todayResult?.pct ?? null,
+        occupied: todayResult?.occupied ?? null,
+        capacity: todayResult?.capacity ?? null,
+        histAvg,
+        isLatest: false,
+      });
     }
+
+    // Mark the latest data point
+    if (lastDataHour >= 0) {
+      hours[lastDataHour].isLatest = true;
+    }
+
     return hours;
+  })();
+
+  const avgPct = (() => {
+    if (!hourlyData) return null;
+    const valid = hourlyData.filter(h => h.pct !== null).map(h => h.pct!);
+    if (valid.length === 0) return null;
+    return Math.round(valid.reduce((a, b) => a + b, 0) / valid.length);
+  })();
+
+  // Get capacity for absolute mode
+  const chartCapacity = (() => {
+    if (!hourlyData) return null;
+    const caps = hourlyData.filter(h => h.capacity !== null).map(h => h.capacity!);
+    return caps.length > 0 ? Math.max(...caps) : null;
   })();
 
   const lastUpdate = props.lastUpdated
@@ -120,27 +290,58 @@ export default function DetailPanel({ feature, onClose }: DetailPanelProps) {
   const streetViewUrl = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}`;
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
 
+  const loadStaticJson = async () => {
+    if (staticJson) { setShowStaticJson(!showStaticJson); return; }
+    setStaticJsonLoading(true);
+    setShowStaticJson(true);
+    try {
+      const r = await fetch(`https://npropendata.rdw.nl/parkingdata/v2/static/${props.uuid}`, { headers: { Accept: 'application/json' } });
+      if (r.status === 404) { setStaticJson('Geen statische data beschikbaar voor deze garage'); }
+      else { const data = await r.json(); setStaticJson(JSON.stringify(data, null, 2)); }
+    } catch { setStaticJson('Kon data niet ophalen (netwerkfout)'); }
+    setStaticJsonLoading(false);
+  };
+
+  const loadDynamicJson = async () => {
+    if (dynamicJson) { setShowDynamicJson(!showDynamicJson); return; }
+    setDynamicJsonLoading(true);
+    setShowDynamicJson(true);
+    try {
+      const r = await fetch(`https://npropendata.rdw.nl/parkingdata/v2/dynamic/${props.uuid}`, { headers: { Accept: 'application/json' } });
+      if (r.status === 404) { setDynamicJson('Geen dynamische data beschikbaar voor deze garage'); }
+      else { const data = await r.json(); setDynamicJson(JSON.stringify(data, null, 2)); }
+    } catch { setDynamicJson('Kon data niet ophalen (netwerkfout)'); }
+    setDynamicJsonLoading(false);
+  };
+
   return (
-    <div className="h-full flex flex-col bg-white">
+    <div className={`flex flex-col bg-white ${mobile ? 'rounded-t-2xl max-h-[85vh]' : 'h-full'}`}>
+      {/* Mobile drag handle */}
+      {mobile && (
+        <div className="flex justify-center pt-3 pb-1">
+          <div className="bottom-sheet-handle" />
+        </div>
+      )}
+
       {/* Header */}
-      <div className="flex items-start justify-between p-4 border-b border-gray-200">
+      <div className={`flex items-start justify-between ${mobile ? 'px-4 pt-1 pb-3' : 'p-4'} border-b border-gray-200`}>
         <div className="flex-1 min-w-0 mr-2">
-          <h2 className="text-base font-bold text-gray-900 truncate">{props.name}</h2>
+          <h2 className={`font-bold text-gray-900 truncate ${mobile ? 'text-lg' : 'text-base'}`}>{props.name}</h2>
           <p className="text-xs text-gray-500 mt-0.5">{props.municipality} | {props.operator}</p>
         </div>
         <button
           onClick={onClose}
-          className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition flex-shrink-0"
+          className={`text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition flex-shrink-0 ${mobile ? 'p-2' : 'p-1.5'}`}
           aria-label="Sluiten"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className={mobile ? 'w-6 h-6' : 'w-5 h-5'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
 
       {/* Scrollable content */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4">
+      <div className={`flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4 ${mobile ? 'pb-6' : ''}`}>
         {/* Occupancy */}
         <div>
           <div className="flex items-center justify-between mb-1">
@@ -155,20 +356,26 @@ export default function DetailPanel({ feature, onClose }: DetailPanelProps) {
               />
             </div>
           )}
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-4 gap-2">
             <div className="bg-gray-50 rounded-lg p-2 text-center">
               <div className="text-lg font-bold text-gray-900">{props.capacity ?? '?'}</div>
               <div className="text-[10px] text-gray-500">Capaciteit</div>
             </div>
             <div className="bg-gray-50 rounded-lg p-2 text-center">
-              <div className="text-lg font-bold text-green-600">{props.vacantSpaces ?? '?'}</div>
+              <div className="text-lg font-bold text-blue-600">{props.vacantSpaces ?? '?'}</div>
               <div className="text-[10px] text-gray-500">Vrij</div>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-2 text-center">
+              <div className="text-lg font-bold" style={{ color }}>
+                {props.capacity != null && props.vacantSpaces != null ? props.capacity - props.vacantSpaces : '?'}
+              </div>
+              <div className="text-[10px] text-gray-500">Bezet</div>
             </div>
             <div className="bg-gray-50 rounded-lg p-2 text-center">
               <div className="text-lg font-bold" style={{ color }}>
                 {props.occupancyPercent !== null ? `${props.occupancyPercent}%` : '?'}
               </div>
-              <div className="text-[10px] text-gray-500">Bezet</div>
+              <div className="text-[10px] text-gray-500">Bezet %</div>
             </div>
           </div>
         </div>
@@ -176,17 +383,16 @@ export default function DetailPanel({ feature, onClose }: DetailPanelProps) {
         {/* Status */}
         <div>
           <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Status</h3>
-          <div className="grid grid-cols-2 gap-2 text-xs">
+          <div className="space-y-1 text-xs">
             <div className="flex justify-between">
               <span className="text-gray-500">Open</span>
-              <span className="font-medium">{props.open ? 'Ja' : props.open === false ? 'Nee' : '?'}</span>
+              <span className="font-medium text-gray-600">{props.open ? 'Ja' : props.open === false ? 'Nee' : '?'}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-500">Vol</span>
-              <span className="font-medium">{props.full ? 'Ja' : props.full === false ? 'Nee' : '?'}</span>
+              <span className="font-medium text-gray-600">{props.full ? 'Ja' : props.full === false ? 'Nee' : '?'}</span>
             </div>
           </div>
-          <div className="text-[11px] text-gray-400 mt-1">Laatst bijgewerkt: {lastUpdate}</div>
         </div>
 
         {/* Address & details */}
@@ -202,31 +408,31 @@ export default function DetailPanel({ feature, onClose }: DetailPanelProps) {
               {staticInfo.address && (
                 <div className="flex justify-between">
                   <span className="text-gray-500">Adres</span>
-                  <span className="font-medium text-right">{staticInfo.address}</span>
+                  <span className="font-medium text-gray-600 text-right">{staticInfo.address}</span>
                 </div>
               )}
               {staticInfo.city && (
                 <div className="flex justify-between">
                   <span className="text-gray-500">Plaats</span>
-                  <span className="font-medium">{staticInfo.city}{staticInfo.zipcode ? ` (${staticInfo.zipcode})` : ''}</span>
+                  <span className="font-medium text-gray-600">{staticInfo.city}{staticInfo.zipcode ? ` (${staticInfo.zipcode})` : ''}</span>
                 </div>
               )}
               {staticInfo.openingTimes && (
                 <div className="flex justify-between">
                   <span className="text-gray-500">Openingstijden</span>
-                  <span className="font-medium">{staticInfo.openingTimes}</span>
+                  <span className="font-medium text-gray-600">{staticInfo.openingTimes}</span>
                 </div>
               )}
               {staticInfo.minHeight !== undefined && (
                 <div className="flex justify-between">
                   <span className="text-gray-500">Min. hoogte</span>
-                  <span className="font-medium">{staticInfo.minHeight}m</span>
+                  <span className="font-medium text-gray-600">{staticInfo.minHeight}m</span>
                 </div>
               )}
               {staticInfo.chargingPoints !== undefined && staticInfo.chargingPoints > 0 && (
                 <div className="flex justify-between">
                   <span className="text-gray-500">Laadpunten</span>
-                  <span className="font-medium">{staticInfo.chargingPoints}</span>
+                  <span className="font-medium text-gray-600">{staticInfo.chargingPoints}</span>
                 </div>
               )}
             </div>
@@ -237,101 +443,263 @@ export default function DetailPanel({ feature, onClose }: DetailPanelProps) {
 
         {/* Hourly occupancy chart */}
         <div>
-          <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Bezetting vandaag (per uur)</h3>
+          <div className="mb-2">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wide">Bezetting vandaag (per uur)</h3>
+              {/* % / # toggle */}
+              {hourlyData && chartCapacity && (
+                <div className="flex bg-gray-100 rounded text-[10px] font-medium">
+                  <button
+                    onClick={() => setChartMode('pct')}
+                    className={`px-2 py-0.5 rounded transition ${chartMode === 'pct' ? 'bg-white shadow-sm text-gray-700' : 'text-gray-400'}`}
+                  >
+                    %
+                  </button>
+                  <button
+                    onClick={() => setChartMode('abs')}
+                    className={`px-2 py-0.5 rounded transition ${chartMode === 'abs' ? 'bg-white shadow-sm text-gray-700' : 'text-gray-400'}`}
+                  >
+                    #
+                  </button>
+                </div>
+              )}
+            </div>
+            {/* Time range filter */}
+            <div className="flex gap-1 mt-1.5">
+              {(['24h', '7d', '30d', '1y'] as const).map((range) => (
+                <button
+                  key={range}
+                  onClick={() => setTimeRange(range)}
+                  className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition ${timeRange === range ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-gray-50 text-gray-400 border border-gray-100 hover:text-gray-600'}`}
+                >
+                  {range === '1y' ? '1j' : range}
+                </button>
+              ))}
+            </div>
+          </div>
           {historyLoading ? (
             <div className="animate-pulse h-24 bg-gray-100 rounded"></div>
           ) : hourlyData ? (
-            <div className="flex items-end gap-px h-24">
-              {hourlyData.map(({ hour, pct }) => (
-                <div key={hour} className="flex-1 flex flex-col items-center justify-end h-full">
-                  {pct !== null ? (
+            <div className="flex">
+              {/* Y-axis labels */}
+              <div className="flex flex-col justify-between h-28 pr-1.5 text-[9px] text-gray-400 flex-shrink-0 text-right">
+                {chartMode === 'pct' || !chartCapacity ? (
+                  <>
+                    <span>100%</span>
+                    <span>75%</span>
+                    <span>50%</span>
+                    <span>25%</span>
+                    <span>0%</span>
+                  </>
+                ) : (
+                  <>
+                    <span>{chartCapacity}</span>
+                    <span>{Math.round(chartCapacity * 0.75)}</span>
+                    <span>{Math.round(chartCapacity * 0.5)}</span>
+                    <span>{Math.round(chartCapacity * 0.25)}</span>
+                    <span>0</span>
+                  </>
+                )}
+              </div>
+              {/* Chart area */}
+              <div className="flex-1 relative h-28">
+                {/* Grid lines */}
+                {[0, 25, 50, 75].map((pct) => (
+                  <div
+                    key={pct}
+                    className="absolute left-0 right-0 border-t border-gray-100 pointer-events-none"
+                    style={{ bottom: `${pct}%` }}
+                  />
+                ))}
+                {/* Average line */}
+                {avgPct !== null && (
+                  <div
+                    className="absolute left-0 right-0 border-t-2 border-dashed border-blue-400/60 pointer-events-none z-10"
+                    style={{ bottom: `${Math.max(avgPct, 2)}%` }}
+                    title={`Gemiddeld vandaag: ${avgPct}%`}
+                  >
+                    <span className="absolute -top-3.5 right-0 text-[9px] font-medium text-blue-500 bg-white/80 px-0.5 rounded">
+                      gem. {chartMode === 'abs' && chartCapacity ? Math.round(chartCapacity * avgPct / 100) : `${avgPct}%`}
+                    </span>
+                  </div>
+                )}
+                {/* Connecting lines for history */}
+                <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none">
+                  {hourlyData.map(({ histAvg }, i) => {
+                    if (histAvg === null) return null;
+                    const nextWithAvg = hourlyData.slice(i + 1).findIndex(h => h.histAvg !== null);
+                    if (nextWithAvg === -1) return null;
+                    const j = i + 1 + nextWithAvg;
+                    const x1 = ((i + 0.5) / 24) * 100;
+                    const x2 = ((j + 0.5) / 24) * 100;
+                    const y1 = 100 - Math.max(histAvg, 2);
+                    const y2 = 100 - Math.max(hourlyData[j].histAvg!, 2);
+                    return <line key={`hl-${i}`} x1={`${x1}%`} y1={`${y1}%`} x2={`${x2}%`} y2={`${y2}%`} stroke="#93c5fd" strokeWidth="1.5" strokeDasharray="3 2" />;
+                  })}
+                </svg>
+                {/* Connecting lines for today */}
+                <svg className="absolute inset-0 w-full h-full pointer-events-none z-[2]" preserveAspectRatio="none">
+                  {hourlyData.map(({ pct }, i) => {
+                    if (pct === null) return null;
+                    const nextWithPct = hourlyData.slice(i + 1).findIndex(h => h.pct !== null);
+                    if (nextWithPct === -1) return null;
+                    const j = i + 1 + nextWithPct;
+                    const x1 = ((i + 0.5) / 24) * 100;
+                    const x2 = ((j + 0.5) / 24) * 100;
+                    const y1 = 100 - Math.max(pct, 2);
+                    const y2 = 100 - Math.max(hourlyData[j].pct!, 2);
+                    return <line key={`tl-${i}`} x1={`${x1}%`} y1={`${y1}%`} x2={`${x2}%`} y2={`${y2}%`} stroke="#3b82f6" strokeWidth="2" />;
+                  })}
+                </svg>
+                {/* Data points */}
+                <div className="flex items-end gap-[2px] h-full relative z-[3]">
+                  {hourlyData.map(({ hour, pct, occupied, capacity, histAvg, isLatest }, idx) => {
+                    const isSelected = selectedHour === idx;
+                    const showLabel = isSelected && pct !== null;
+                    return (
                     <div
-                      className="w-full rounded-t-sm min-h-[2px] transition-all"
-                      style={{
-                        height: `${Math.max(pct, 2)}%`,
-                        backgroundColor: getOccupancyColor(pct),
-                      }}
-                      title={`${hour}:00 - ${pct}%`}
-                    />
-                  ) : (
-                    <div
-                      className="w-full rounded-t-sm bg-gray-200"
-                      style={{ height: '2px' }}
-                      title={`${hour}:00 - geen data`}
-                    />
-                  )}
+                      key={hour}
+                      className="flex-1 flex flex-col items-center h-full relative cursor-pointer"
+                      onClick={() => setSelectedHour(isSelected ? null : (pct !== null ? idx : null))}
+                    >
+                      {/* Historical average dot */}
+                      {histAvg !== null && (
+                        <div
+                          className="absolute w-2 h-2 rounded-full bg-blue-300 left-1/2 -translate-x-1/2"
+                          style={{ bottom: `calc(${Math.max(histAvg, 2)}% - 4px)` }}
+                        />
+                      )}
+                      {/* Today's dot */}
+                      {pct !== null && (
+                        <div
+                          className={`absolute left-1/2 -translate-x-1/2 rounded-full z-[1] transition-all ${isLatest ? 'w-3 h-3 bg-blue-600 ring-2 ring-blue-300' : isSelected ? 'w-3 h-3 bg-blue-600' : 'w-2 h-2 bg-blue-600'}`}
+                          style={{ bottom: `calc(${Math.max(pct, 2)}% - ${isLatest || isSelected ? 6 : 4}px)` }}
+                        />
+                      )}
+                      {/* Clicked tooltip */}
+                      {showLabel && (
+                        <div
+                          className="absolute left-1/2 -translate-x-1/2 z-20 bg-gray-800 text-white text-[9px] font-medium px-1.5 py-0.5 rounded shadow whitespace-nowrap"
+                          style={{ bottom: `calc(${Math.max(pct!, 2)}% + 6px)` }}
+                        >
+                          {chartMode === 'abs' && occupied !== null ? `${occupied}/${capacity}` : `${pct}%`}
+                          <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-[3px] border-r-[3px] border-t-[3px] border-transparent border-t-gray-800" />
+                        </div>
+                      )}
+                    </div>
+                    );
+                  })}
                 </div>
-              ))}
+              </div>
             </div>
           ) : (
-            <p className="text-xs text-gray-400">Geen data beschikbaar voor vandaag</p>
+            <p className="text-xs text-gray-400">Geen data beschikbaar</p>
           )}
           {hourlyData && (
-            <div className="flex justify-between mt-1 text-[9px] text-gray-400">
-              <span>00:00</span>
-              <span>06:00</span>
-              <span>12:00</span>
-              <span>18:00</span>
-              <span>23:00</span>
+            <div className="flex">
+              <div className="w-[30px] flex-shrink-0" />
+              <div className="flex-1 flex justify-between mt-1 text-[9px] text-gray-400">
+                <span>00:00</span>
+                <span>06:00</span>
+                <span>12:00</span>
+                <span>18:00</span>
+                <span>23:00</span>
+              </div>
+            </div>
+          )}
+          {/* Legend */}
+          {hourlyData && historyDays.length > 0 && (
+            <div className="flex items-center gap-3 mt-1.5 text-[9px] text-gray-400">
+              <span className="flex items-center gap-1">
+                <span className="inline-block w-2.5 h-2.5 rounded-full bg-blue-600 ring-1 ring-blue-300"></span>
+                Laatste meting
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="inline-block w-2 h-2 rounded-full bg-blue-600"></span>
+                Vandaag
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="inline-block w-2 h-2 rounded-full bg-blue-300"></span>
+                Gem. {timeRange === '1y' ? '1j' : timeRange}
+              </span>
             </div>
           )}
         </div>
 
-        {/* Links */}
+        {/* Mini-map */}
         <div>
-          <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Links</h3>
-          <div className="space-y-1.5">
-            <a
-              href={streetViewUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-xs text-blue-600 hover:text-blue-800 hover:underline"
-            >
-              <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-              </svg>
-              Google Street View
-            </a>
-            <a
-              href={mapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-xs text-blue-600 hover:text-blue-800 hover:underline"
-            >
-              <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" />
-              </svg>
-              Google Maps
-            </a>
-            <a
-              href={`https://npropendata.rdw.nl/parkingdata/v2/static/${props.uuid}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-xs text-blue-600 hover:text-blue-800 hover:underline"
-            >
-              <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-              </svg>
-              Static API (JSON)
-            </a>
-            <a
-              href={`https://npropendata.rdw.nl/parkingdata/v2/dynamic/${props.uuid}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-xs text-blue-600 hover:text-blue-800 hover:underline"
-            >
-              <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5" />
-              </svg>
-              Dynamic API (JSON)
-            </a>
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wide">Locatie</h3>
+            <div className="flex bg-gray-100 rounded text-[10px] font-medium">
+              <button
+                onClick={() => setMiniMapSatellite(false)}
+                className={`px-2 py-0.5 rounded transition ${!miniMapSatellite ? 'bg-white shadow-sm text-gray-700' : 'text-gray-400'}`}
+              >
+                Kaart
+              </button>
+              <button
+                onClick={() => setMiniMapSatellite(true)}
+                className={`px-2 py-0.5 rounded transition ${miniMapSatellite ? 'bg-white shadow-sm text-gray-700' : 'text-gray-400'}`}
+              >
+                Satelliet
+              </button>
+            </div>
+          </div>
+          <MiniMapView lat={lat} lng={lng} satellite={miniMapSatellite} uuid={props.uuid} />
+          <div className="flex gap-2 mt-1.5">
+            <a href={streetViewUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] text-blue-600 hover:underline">Street View</a>
+            <span className="text-gray-300">|</span>
+            <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] text-blue-600 hover:underline">Google Maps</a>
           </div>
         </div>
 
-        {/* Coordinates */}
-        <div className="text-[10px] text-gray-400 pt-2 border-t border-gray-100">
-          {lat.toFixed(6)}, {lng.toFixed(6)} | UUID: <span className="font-mono">{props.uuid.slice(0, 8)}...</span>
+        {/* API Data */}
+        <div>
+          <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">API Data</h3>
+          <div className="space-y-2">
+            {/* Static API */}
+            <div>
+              <button
+                onClick={loadStaticJson}
+                className="flex items-center gap-2 text-xs text-blue-600 hover:text-blue-800 w-full text-left"
+              >
+                <svg className={`w-3 h-3 transition-transform flex-shrink-0 ${showStaticJson ? 'rotate-90' : ''}`} fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
+                </svg>
+                Static API
+                {staticJsonLoading && <span className="text-gray-400 text-[10px]">laden...</span>}
+              </button>
+              {showStaticJson && staticJson && (
+                <pre className="mt-1 p-2 bg-gray-50 border border-gray-200 rounded text-[10px] text-gray-700 font-mono overflow-x-auto max-h-48 overflow-y-auto custom-scrollbar whitespace-pre-wrap break-all">
+                  {staticJson}
+                </pre>
+              )}
+            </div>
+            {/* Dynamic API */}
+            <div>
+              <button
+                onClick={loadDynamicJson}
+                className="flex items-center gap-2 text-xs text-blue-600 hover:text-blue-800 w-full text-left"
+              >
+                <svg className={`w-3 h-3 transition-transform flex-shrink-0 ${showDynamicJson ? 'rotate-90' : ''}`} fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
+                </svg>
+                Dynamic API
+                {dynamicJsonLoading && <span className="text-gray-400 text-[10px]">laden...</span>}
+              </button>
+              {showDynamicJson && dynamicJson && (
+                <pre className="mt-1 p-2 bg-gray-50 border border-gray-200 rounded text-[10px] text-gray-700 font-mono overflow-x-auto max-h-48 overflow-y-auto custom-scrollbar whitespace-pre-wrap break-all">
+                  {dynamicJson}
+                </pre>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="text-[10px] text-gray-400 pt-2 border-t border-gray-100 space-y-0.5">
+          <div>Laatst bijgewerkt: {lastUpdate}</div>
+          <div>{lat.toFixed(6)}, {lng.toFixed(6)} | UUID: <span className="font-mono">{props.uuid.slice(0, 8)}...</span></div>
         </div>
       </div>
     </div>

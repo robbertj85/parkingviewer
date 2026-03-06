@@ -1,12 +1,17 @@
 {
   "municipality": "Schiedam",
-  "generated_at": "2026-03-06T14:44:53.208422+00:00",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
   "facility_count": 1,
   "facilities": [
     {
       "uuid": "ed205aff-9f9b-4f16-b649-76b53971e4d7",
       "name": "P+R Schiedam Vijfsluizen (Schiedam)",
       "operator": "Schiedam",
+      "street": "Karel Doormanweg",
+      "houseNumber": "60",
+      "zipcode": "3115JD",
+      "city": "Schiedam",
+      "province": "Zuid-Holland",
       "latitude": 51.908207,
       "longitude": 4.372793,
       "capacity": 88,
@@ -14,7 +19,11 @@
       "occupancyPercent": 100.0,
       "open": true,
       "full": true,
-      "lastUpdated": 1772762460
+      "lastUpdated": 1772762460,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
     }
   ]
 }

@@ -1,12 +1,17 @@
 {
   "municipality": "Bunde",
-  "generated_at": "2026-03-06T14:44:53.208422+00:00",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
   "facility_count": 2,
   "facilities": [
     {
       "uuid": "c5e2a674-a5c3-4c74-9b84-377b3dfaf146",
       "name": "P+R Spoorstraat (Bunde)",
       "operator": "Nederlandse Spoorwegen",
+      "street": "Spoorstraat",
+      "houseNumber": "0",
+      "zipcode": "6241CL",
+      "city": "Bunde",
+      "province": "Limburg",
       "latitude": 50.897367,
       "longitude": 5.735898,
       "capacity": 90,
@@ -14,12 +19,21 @@
       "occupancyPercent": 88.9,
       "open": true,
       "full": false,
-      "lastUpdated": 1639497702
+      "lastUpdated": 1639497702,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
     },
     {
       "uuid": "66834791-df8d-4c8b-86f3-23ce0c131c3b",
       "name": "P+R Spoorstraat (Bunde)",
       "operator": "Nederlandse Spoorwegen",
+      "street": "Spoorstraat",
+      "houseNumber": "0",
+      "zipcode": "6241CL",
+      "city": "Bunde",
+      "province": "Limburg",
       "latitude": 50.896643,
       "longitude": 5.736096,
       "capacity": 37,
@@ -27,7 +41,11 @@
       "occupancyPercent": 16.2,
       "open": true,
       "full": false,
-      "lastUpdated": 1639497702
+      "lastUpdated": 1639497702,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
     }
   ]
 }

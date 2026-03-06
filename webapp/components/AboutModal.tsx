@@ -35,12 +35,12 @@ export default function AboutModal({ isOpen, onClose }: AboutModalProps) {
   return (
     <dialog
       ref={dialogRef}
-      className="backdrop:bg-black/50 rounded-lg shadow-xl max-w-lg w-full p-0 overflow-hidden fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 m-0"
+      className="backdrop:bg-black/50 rounded-lg shadow-xl max-w-lg w-[calc(100%-2rem)] sm:w-full p-0 overflow-hidden fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 m-0 max-h-[90vh]"
       onClick={(e) => {
         if (e.target === dialogRef.current) onClose();
       }}
     >
-      <div className="p-6">
+      <div className="p-4 sm:p-6 overflow-y-auto max-h-[90vh]">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-gray-900">Over Parkeerviewer</h2>
           <button
@@ -65,8 +65,8 @@ export default function AboutModal({ isOpen, onClose }: AboutModalProps) {
             <p className="mb-2">Parkeergarages worden op de kaart gekleurd op basis van bezettingsgraad:</p>
             <ul className="space-y-1.5">
               {[
-                { color: '#16a34a', label: 'Rustig', desc: 'Minder dan 30% bezet' },
-                { color: '#22c55e', label: 'Beschikbaar', desc: '30-60% bezet' },
+                { color: '#2563eb', label: 'Rustig', desc: 'Minder dan 30% bezet' },
+                { color: '#3b82f6', label: 'Beschikbaar', desc: '30-60% bezet' },
                 { color: '#eab308', label: 'Druk', desc: '60-80% bezet' },
                 { color: '#f97316', label: 'Bijna vol', desc: '80-95% bezet' },
                 { color: '#dc2626', label: 'Vol', desc: 'Meer dan 95% bezet' },

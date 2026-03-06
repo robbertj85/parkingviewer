@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
 import L from 'leaflet';
 import { ParkingData, ParkingFeature, Filters, getOccupancyColor } from '@/types/parking';
 
@@ -11,7 +11,11 @@ interface MapProps {
   selectedUuid?: string | null;
 }
 
-export default function Map({ data, filters, onSelectFacility, selectedUuid }: MapProps) {
+export interface MapHandle {
+  flyTo: (lat: number, lng: number, zoom?: number) => void;
+}
+
+const Map = forwardRef<MapHandle, MapProps>(function Map({ data, filters, onSelectFacility, selectedUuid }, ref) {
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<L.LayerGroup | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -24,8 +28,11 @@ export default function Map({ data, filters, onSelectFacility, selectedUuid }: M
     const map = L.map(containerRef.current, {
       center: [52.1, 5.3],
       zoom: 8,
-      zoomControl: true,
+      zoomControl: false,
     });
+
+    // Add zoom control to top-right to avoid conflict with mobile filter button
+    L.control.zoom({ position: 'topright' }).addTo(map);
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
@@ -41,6 +48,14 @@ export default function Map({ data, filters, onSelectFacility, selectedUuid }: M
       mapRef.current = null;
     };
   }, []);
+
+  useImperativeHandle(ref, () => ({
+    flyTo: (lat: number, lng: number, zoom?: number) => {
+      if (mapRef.current) {
+        mapRef.current.flyTo([lat, lng], zoom ?? 14, { animate: true, duration: 1 });
+      }
+    },
+  }));
 
   // Update markers when data or filters change
   useEffect(() => {
@@ -106,4 +121,6 @@ export default function Map({ data, filters, onSelectFacility, selectedUuid }: M
   }, [selectedUuid, data]);
 
   return <div ref={containerRef} className="w-full h-full" />;
-}
+});
+
+export default Map;

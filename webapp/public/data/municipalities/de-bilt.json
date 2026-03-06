@@ -1,0 +1,29 @@
+{
+  "municipality": "De Bilt",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
+  "facility_count": 1,
+  "facilities": [
+    {
+      "uuid": "fbdec230-14d1-47f6-b62f-9aedc6f87280",
+      "name": "P + R station Bilthoven",
+      "operator": "Nederlandse Spoorwegen",
+      "street": "Rembrandtlaan",
+      "houseNumber": "34",
+      "zipcode": "3723BJ",
+      "city": "Bilthoven",
+      "province": "",
+      "latitude": 52.130495,
+      "longitude": 5.202638,
+      "capacity": 160,
+      "vacantSpaces": 150,
+      "occupancyPercent": 6.2,
+      "open": true,
+      "full": false,
+      "lastUpdated": 1766561807,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
+    }
+  ]
+}

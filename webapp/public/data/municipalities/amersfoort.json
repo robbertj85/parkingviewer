@@ -1,33 +1,51 @@
 {
   "municipality": "Amersfoort",
-  "generated_at": "2026-03-06T14:44:53.208422+00:00",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
   "facility_count": 2,
   "facilities": [
     {
       "uuid": "325f0f1e-f5e5-44fa-8335-a7086df8976e",
       "name": "P+R Barchman Wuijtierslaan (Amersfoort)",
       "operator": "Nederlandse Spoorwegen",
+      "street": "Barchman Wuytierslaan",
+      "houseNumber": "0",
+      "zipcode": "3818LE",
+      "city": "Amersfoort",
+      "province": "",
       "latitude": 52.1529,
       "longitude": 5.36837,
       "capacity": 180,
-      "vacantSpaces": 165,
-      "occupancyPercent": 8.3,
+      "vacantSpaces": 167,
+      "occupancyPercent": 7.2,
       "open": true,
       "full": false,
-      "lastUpdated": 1772807587
+      "lastUpdated": 1772811142,
+      "minimumHeightInMeters": 2.1,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
     },
     {
       "uuid": "fa1c4be1-6424-43e9-bf19-91cbb126ce63",
       "name": "P+R Piet Mondriaanplein (Amersfoort)",
       "operator": "Nederlandse Spoorwegen",
+      "street": "Piet Mondriaanplein",
+      "houseNumber": "0",
+      "zipcode": "3818LG",
+      "city": "Amersfoort",
+      "province": "",
       "latitude": 52.15498,
       "longitude": 5.37218,
       "capacity": 431,
-      "vacantSpaces": 80,
-      "occupancyPercent": 81.4,
+      "vacantSpaces": 92,
+      "occupancyPercent": 78.7,
       "open": true,
       "full": false,
-      "lastUpdated": 1772807923
+      "lastUpdated": 1772811406,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
     }
   ]
 }

@@ -1,10 +1,15 @@
 {
-  "generated_at": "2026-03-06T14:44:53.208422+00:00",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
   "municipalities": [
+    {
+      "name": "'s-Gravenhage",
+      "slug": "'s-gravenhage",
+      "facility_count": 2
+    },
     {
       "name": "'s-Hertogenbosch",
       "slug": "'s-hertogenbosch",
-      "facility_count": 10
+      "facility_count": 12
     },
     {
       "name": "A50",
@@ -19,7 +24,7 @@
     {
       "name": "Almere",
       "slug": "almere",
-      "facility_count": 2
+      "facility_count": 3
     },
     {
       "name": "Almere Buiten",
@@ -44,7 +49,7 @@
     {
       "name": "Amsterdam",
       "slug": "amsterdam",
-      "facility_count": 19
+      "facility_count": 41
     },
     {
       "name": "Amsterdam Lelylaan",
@@ -54,7 +59,7 @@
     {
       "name": "Apeldoorn",
       "slug": "apeldoorn",
-      "facility_count": 3
+      "facility_count": 7
     },
     {
       "name": "Arnhem",
@@ -97,9 +102,19 @@
       "facility_count": 2
     },
     {
+      "name": "De Bilt",
+      "slug": "de-bilt",
+      "facility_count": 1
+    },
+    {
+      "name": "De Ronde Venen",
+      "slug": "de-ronde-venen",
+      "facility_count": 1
+    },
+    {
       "name": "Delft",
       "slug": "delft",
-      "facility_count": 3
+      "facility_count": 13
     },
     {
       "name": "Den Haag",
@@ -109,7 +124,7 @@
     {
       "name": "Deventer",
       "slug": "deventer",
-      "facility_count": 6
+      "facility_count": 7
     },
     {
       "name": "Diemen",
@@ -137,14 +152,19 @@
       "facility_count": 2
     },
     {
+      "name": "Ede",
+      "slug": "ede",
+      "facility_count": 2
+    },
+    {
       "name": "Eindhoven",
       "slug": "eindhoven",
-      "facility_count": 1
+      "facility_count": 2
     },
     {
       "name": "Enschede",
       "slug": "enschede",
-      "facility_count": 3
+      "facility_count": 7
     },
     {
       "name": "Gorinchem",
@@ -154,7 +174,7 @@
     {
       "name": "Groningen",
       "slug": "groningen",
-      "facility_count": 1
+      "facility_count": 2
     },
     {
       "name": "HWZB",
@@ -194,7 +214,7 @@
     {
       "name": "Hoorn",
       "slug": "hoorn",
-      "facility_count": 4
+      "facility_count": 7
     },
     {
       "name": "Klimmen Ransdaal",
@@ -219,7 +239,12 @@
     {
       "name": "Maastricht",
       "slug": "maastricht",
-      "facility_count": 5
+      "facility_count": 7
+    },
+    {
+      "name": "Marnix",
+      "slug": "marnix",
+      "facility_count": 1
     },
     {
       "name": "Meersen",
@@ -244,12 +269,12 @@
     {
       "name": "Nijmegen",
       "slug": "nijmegen",
-      "facility_count": 7
+      "facility_count": 11
     },
     {
       "name": "Noordwijk",
       "slug": "noordwijk",
-      "facility_count": 1
+      "facility_count": 2
     },
     {
       "name": "Odijkerweg, Zeist",
@@ -274,12 +299,12 @@
     {
       "name": "Roosendaal",
       "slug": "roosendaal",
-      "facility_count": 7
+      "facility_count": 8
     },
     {
       "name": "Rotterdam",
       "slug": "rotterdam",
-      "facility_count": 14
+      "facility_count": 23
     },
     {
       "name": "Rotterdam Centraal",
@@ -312,9 +337,19 @@
       "facility_count": 1
     },
     {
+      "name": "Stichtse Vecht",
+      "slug": "stichtse-vecht",
+      "facility_count": 3
+    },
+    {
       "name": "Susteren",
       "slug": "susteren",
       "facility_count": 2
+    },
+    {
+      "name": "Teylingen",
+      "slug": "teylingen",
+      "facility_count": 1
     },
     {
       "name": "Tilburg",
@@ -334,7 +369,7 @@
     {
       "name": "Veenendaal",
       "slug": "veenendaal",
-      "facility_count": 3
+      "facility_count": 5
     },
     {
       "name": "Venlo",
@@ -357,9 +392,14 @@
       "facility_count": 1
     },
     {
+      "name": "West Betuwe",
+      "slug": "west-betuwe",
+      "facility_count": 1
+    },
+    {
       "name": "Woerden",
       "slug": "woerden",
-      "facility_count": 2
+      "facility_count": 3
     },
     {
       "name": "Zaandam",
@@ -384,7 +424,7 @@
     {
       "name": "Zwolle",
       "slug": "zwolle",
-      "facility_count": 7
+      "facility_count": 9
     },
     {
       "name": "utrecht",

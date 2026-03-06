@@ -1,12 +1,17 @@
 {
   "municipality": "Heerlen",
-  "generated_at": "2026-03-06T14:44:53.208422+00:00",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
   "facility_count": 3,
   "facilities": [
     {
       "uuid": "0c427131-5ed6-4901-bfad-7171ade5ac33",
       "name": "P+R Mijnspoorweg (Heerlen)",
       "operator": "Nederlandse Spoorwegen",
+      "street": "Spoordamstraat",
+      "houseNumber": "0",
+      "zipcode": "6415",
+      "city": "Heerlen",
+      "province": "Limburg",
       "latitude": 50.895735,
       "longitude": 5.95347,
       "capacity": 49,
@@ -14,12 +19,21 @@
       "occupancyPercent": 8.2,
       "open": true,
       "full": false,
-      "lastUpdated": 1639497704
+      "lastUpdated": 1639497704,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
     },
     {
       "uuid": "75104ad9-e029-4709-9b68-6b150258fc15",
       "name": "P+R In de Cramer (Heerlen)",
       "operator": "Nederlandse Spoorwegen",
+      "street": "In de Cramer",
+      "houseNumber": "0",
+      "zipcode": "6411RS",
+      "city": "Heerlen",
+      "province": "Limburg",
       "latitude": 50.895842,
       "longitude": 5.953013,
       "capacity": 12,
@@ -27,20 +41,33 @@
       "occupancyPercent": 33.3,
       "open": true,
       "full": false,
-      "lastUpdated": 1639497704
+      "lastUpdated": 1639497704,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
     },
     {
       "uuid": "7565d9ad-4f5a-4cb0-b9c5-53d68a2ad323",
       "name": "P+R Parallelweg (Heerlen)",
       "operator": "Nederlandse Spoorwegen",
+      "street": "Parallelweg",
+      "houseNumber": "0",
+      "zipcode": "6411NA",
+      "city": "Heerlen",
+      "province": "",
       "latitude": 50.89101,
       "longitude": 5.97021,
       "capacity": 223,
-      "vacantSpaces": 212,
-      "occupancyPercent": 4.9,
+      "vacantSpaces": 216,
+      "occupancyPercent": 3.1,
       "open": true,
       "full": false,
-      "lastUpdated": 1772807769
+      "lastUpdated": 1772811368,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
     }
   ]
 }

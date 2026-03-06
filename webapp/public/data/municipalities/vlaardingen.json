@@ -1,12 +1,17 @@
 {
   "municipality": "Vlaardingen",
-  "generated_at": "2026-03-06T14:44:53.208422+00:00",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
   "facility_count": 3,
   "facilities": [
     {
       "uuid": "953eec27-3077-4c28-84df-0d4248d45b08",
       "name": "Garage Hoogstraat (Vlaardingen)",
       "operator": "BKS Parking",
+      "street": "Kornelis Speelmanstraat",
+      "houseNumber": "4",
+      "zipcode": "3131BG",
+      "city": "Vlaardingen",
+      "province": "Zuid-Holland",
       "latitude": 51.911554,
       "longitude": 4.343305,
       "capacity": 153,
@@ -14,12 +19,21 @@
       "occupancyPercent": 30.1,
       "open": "true",
       "full": "false",
-      "lastUpdated": 1639497732
+      "lastUpdated": 1639497732,
+      "minimumHeightInMeters": 1.95,
+      "chargingPointCapacity": 0,
+      "disabledAccess": true,
+      "usage": "Garage parkeren"
     },
     {
       "uuid": "226e334b-3fdd-4aaa-bddf-a6b10a3c98ee",
       "name": "Garage Liesveld (Vlaardingen)",
       "operator": "BKS Parking",
+      "street": "Van Riebeeckstraat",
+      "houseNumber": "30",
+      "zipcode": "3131VV",
+      "city": "Vlaardingen",
+      "province": "Zuid-Holland",
       "latitude": 51.910687,
       "longitude": 4.337227,
       "capacity": 316,
@@ -27,12 +41,21 @@
       "occupancyPercent": 4.4,
       "open": "true",
       "full": "false",
-      "lastUpdated": 1639497724
+      "lastUpdated": 1639497724,
+      "minimumHeightInMeters": 2.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "Garage parkeren"
     },
     {
       "uuid": "97a243f4-d0d9-4224-b0c1-72a9566bb677",
       "name": "Garage Stadhuis (Vlaardingen)",
       "operator": "BKS Parking",
+      "street": "Dr. Sacharovplaats",
+      "houseNumber": "3",
+      "zipcode": "3131MH",
+      "city": "Vlaardingen",
+      "province": "Zuid-Holland",
       "latitude": 51.907665,
       "longitude": 4.33769,
       "capacity": 150,
@@ -40,7 +63,11 @@
       "occupancyPercent": 9.3,
       "open": "true",
       "full": "false",
-      "lastUpdated": 1639497728
+      "lastUpdated": 1639497728,
+      "minimumHeightInMeters": 2.0,
+      "chargingPointCapacity": 4,
+      "disabledAccess": false,
+      "usage": "Garage parkeren"
     }
   ]
 }

@@ -118,10 +118,26 @@ def fetch_all_static(facilities):
             lng = float(lng) if lng else None
 
             specs = info.get("specifications", [{}])
-            capacity = specs[0].get("capacity") if specs else None
+            spec = specs[0] if specs else {}
+            capacity = spec.get("capacity")
             if capacity is not None:
                 capacity = int(capacity)
             operator = info.get("operator", {})
+
+            # Extract address from first accessPoint
+            address = {}
+            access_points = info.get("accessPoints", [])
+            for ap in access_points:
+                ap_addr = ap.get("accessPointAddress", {})
+                if ap_addr.get("streetName"):
+                    address = {
+                        "street": ap_addr.get("streetName", ""),
+                        "houseNumber": ap_addr.get("houseNumber", ""),
+                        "zipcode": ap_addr.get("zipcode", ""),
+                        "city": ap_addr.get("city", ""),
+                        "province": ap_addr.get("province", ""),
+                    }
+                    break
 
             return uuid, {
                 "uuid": uuid,
@@ -131,6 +147,11 @@ def fetch_all_static(facilities):
                 "capacity": capacity,
                 "operator": operator.get("name", "Unknown"),
                 "description": info.get("description", ""),
+                "address": address,
+                "minimumHeightInMeters": spec.get("minimumHeightInMeters"),
+                "chargingPointCapacity": spec.get("chargingPointCapacity", 0),
+                "disabledAccess": spec.get("disabledAccess", False),
+                "usage": spec.get("usage", ""),
             }
         except Exception as e:
             return uuid, None
@@ -188,6 +209,74 @@ def fetch_all_dynamic(facilities):
     return dynamic_data
 
 
+# PDOK uses official municipality names which differ from common names
+_MUNICIPALITY_ALIASES = {
+    "Den Haag": "'s-Gravenhage",
+    "Den Bosch": "'s-Hertogenbosch",
+}
+
+
+def geocode_facility(name, operator=None):
+    """Use PDOK geocoding to find coordinates for a facility by name.
+    Builds a list of (query, fq_filter) pairs to try in order.
+    operator can serve as a municipality hint (many municipal operators use their city name).
+    """
+    queries = []  # list of (query_string, municipality_filter_or_None)
+
+    # Q-Park style: "AMSTERDAM-The Bank Rembrandtplein" → search address in city
+    if "-" in name and name.split("-")[0].isupper():
+        parts = name.split("-", 1)
+        city = parts[0].title()
+        address = parts[1]
+        pdok_city = _MUNICIPALITY_ALIASES.get(city, city)
+        queries.append((address, pdok_city))
+        queries.append((f"{address} {city}", None))
+        queries.append((city, None))
+
+    # "(City)" style: "Garage Turfmarkt (Den Haag)" → search name in city
+    if "(" in name and ")" in name:
+        start = name.rindex("(") + 1
+        end = name.rindex(")")
+        city = name[start:end].strip()
+        pdok_city = _MUNICIPALITY_ALIASES.get(city, city)
+        before_paren = name[:name.rindex("(")].strip()
+        queries.append((before_paren, pdok_city))
+        queries.append((f"{before_paren} {city}", None))
+
+    # Use operator as municipality hint (e.g. operator="Amsterdam" for "Garage Waterlooplein")
+    if operator and operator not in ("Unknown",):
+        pdok_op = _MUNICIPALITY_ALIASES.get(operator, operator)
+        queries.append((name, pdok_op))
+        queries.append((f"{name} {operator}", None))
+
+    # Fallback: full name as-is
+    queries.append((name, None))
+
+    for query, city_filter in queries:
+        try:
+            params = {"q": query, "rows": 1, "fl": "centroide_ll,gemeentenaam"}
+            if city_filter:
+                params["fq"] = f"gemeentenaam:{city_filter}"
+            resp = requests.get(
+                "https://api.pdok.nl/bzk/locatieserver/search/v3_1/free",
+                params=params,
+                timeout=10,
+            )
+            if resp.ok:
+                docs = resp.json().get("response", {}).get("docs", [])
+                if docs and docs[0].get("centroide_ll"):
+                    point = docs[0]["centroide_ll"]  # "POINT(lng lat)"
+                    coords = point.replace("POINT(", "").replace(")", "").split()
+                    lng, lat = float(coords[0]), float(coords[1])
+                    municipality = docs[0].get("gemeentenaam")
+                    return lat, lng, municipality
+        except Exception:
+            pass
+        time.sleep(0.05)
+
+    return None, None, None
+
+
 def extract_municipality(name):
     """Extract municipality name from facility name.
     Names are typically like 'Q-Park Beekstraat (Apeldoorn)' or 'P+R Amsterdam Arena'.
@@ -196,6 +285,51 @@ def extract_municipality(name):
         start = name.rindex("(") + 1
         end = name.rindex(")")
         return name[start:end].strip()
+    return None
+
+
+def reverse_geocode_municipality(lat, lng):
+    """Use PDOK reverse geocoding to find the municipality for coordinates."""
+    try:
+        resp = requests.get(
+            f"https://api.pdok.nl/bzk/locatieserver/search/v3_1/reverse?lon={lng}&lat={lat}&rows=1&fl=gemeentenaam",
+            timeout=10,
+        )
+        if resp.ok:
+            docs = resp.json().get("response", {}).get("docs", [])
+            if docs and docs[0].get("gemeentenaam"):
+                return docs[0]["gemeentenaam"]
+    except Exception:
+        pass
+    return None
+
+
+# Cache for reverse geocoded municipalities to avoid duplicate API calls
+_reverse_geocode_cache = {}
+
+
+def resolve_municipality(name, description, lat, lng):
+    """Resolve municipality from name/description, falling back to PDOK reverse geocoding."""
+    # Try extracting from description first, then name
+    for text in [description, name]:
+        if text:
+            result = extract_municipality(text)
+            if result:
+                return result
+
+    # Fall back to PDOK reverse geocoding using coordinates
+    if lat and lng:
+        # Round to 3 decimals (~100m) for cache key to group nearby facilities
+        cache_key = (round(lat, 3), round(lng, 3))
+        if cache_key in _reverse_geocode_cache:
+            return _reverse_geocode_cache[cache_key]
+
+        time.sleep(0.05)  # Rate limit PDOK requests
+        municipality = reverse_geocode_municipality(lat, lng)
+        _reverse_geocode_cache[cache_key] = municipality or "Onbekend"
+        if municipality:
+            return municipality
+
     return "Onbekend"
 
 
@@ -204,14 +338,36 @@ def build_facilities_geojson(static_data, dynamic_data):
     features = []
     municipalities = {}
 
+    geocoded_count = 0
     for uuid, static in static_data.items():
-        if not static.get("latitude") or not static.get("longitude"):
-            continue
+        lat = static.get("latitude")
+        lng = static.get("longitude")
+        geocoded_municipality = None
+
+        # Geocode facilities missing coordinates
+        if not lat or not lng:
+            glat, glng, gmuni = geocode_facility(static.get("name", ""), static.get("operator"))
+            if glat and glng:
+                lat = glat
+                lng = glng
+                static["latitude"] = lat
+                static["longitude"] = lng
+                geocoded_municipality = gmuni
+                geocoded_count += 1
+                print(f"  Geocoded: {static.get('name')} → ({lat:.4f}, {lng:.4f})")
+            else:
+                print(f"  Skipped (no coords): {static.get('name')}")
+                continue
 
         dynamic = dynamic_data.get(uuid, {})
         capacity = dynamic.get("parkingCapacity") or static.get("capacity")
         vacant = dynamic.get("vacantSpaces")
-        municipality = extract_municipality(static.get("description") or static["name"])
+        municipality = geocoded_municipality or resolve_municipality(
+            static["name"],
+            static.get("description", ""),
+            lat,
+            lng,
+        )
 
         try:
             capacity = int(capacity) if capacity is not None else None
@@ -226,17 +382,27 @@ def build_facilities_geojson(static_data, dynamic_data):
         if capacity and vacant is not None and capacity > 0:
             occupancy_pct = round(((capacity - vacant) / capacity) * 100, 1)
 
+        address = static.get("address", {})
         props = {
             "uuid": uuid,
             "name": static["name"],
             "municipality": municipality,
             "operator": static.get("operator", "Unknown"),
+            "street": address.get("street", ""),
+            "houseNumber": address.get("houseNumber", ""),
+            "zipcode": address.get("zipcode", ""),
+            "city": address.get("city", ""),
+            "province": address.get("province", ""),
             "capacity": capacity,
             "vacantSpaces": vacant,
             "occupancyPercent": occupancy_pct,
             "open": dynamic.get("open"),
             "full": dynamic.get("full"),
             "lastUpdated": dynamic.get("lastUpdated"),
+            "minimumHeightInMeters": static.get("minimumHeightInMeters"),
+            "chargingPointCapacity": static.get("chargingPointCapacity", 0),
+            "disabledAccess": static.get("disabledAccess", False),
+            "usage": static.get("usage", ""),
         }
 
         features.append({
@@ -252,6 +418,9 @@ def build_facilities_geojson(static_data, dynamic_data):
         if municipality not in municipalities:
             municipalities[municipality] = []
         municipalities[municipality].append(uuid)
+
+    if geocoded_count:
+        print(f"Geocoded {geocoded_count} facilities that were missing coordinates")
 
     return {
         "type": "FeatureCollection",
@@ -346,10 +515,16 @@ def generate_municipality_files(static_data, dynamic_data, municipalities):
             if capacity and vacant is not None and capacity > 0:
                 occupancy_pct = round(((capacity - vacant) / capacity) * 100, 1)
 
+            address = static.get("address", {})
             facilities.append({
                 "uuid": uuid,
                 "name": static.get("name", "Unknown"),
                 "operator": static.get("operator", "Unknown"),
+                "street": address.get("street", ""),
+                "houseNumber": address.get("houseNumber", ""),
+                "zipcode": address.get("zipcode", ""),
+                "city": address.get("city", ""),
+                "province": address.get("province", ""),
                 "latitude": static.get("latitude"),
                 "longitude": static.get("longitude"),
                 "capacity": capacity,
@@ -358,6 +533,10 @@ def generate_municipality_files(static_data, dynamic_data, municipalities):
                 "open": dynamic.get("open"),
                 "full": dynamic.get("full"),
                 "lastUpdated": dynamic.get("lastUpdated"),
+                "minimumHeightInMeters": static.get("minimumHeightInMeters"),
+                "chargingPointCapacity": static.get("chargingPointCapacity", 0),
+                "disabledAccess": static.get("disabledAccess", False),
+                "usage": static.get("usage", ""),
             })
 
         muni_data = {

@@ -1,13 +1,15 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import StatsPanel from '@/components/StatsPanel';
 import FilterPanel from '@/components/FilterPanel';
 import AboutModal from '@/components/AboutModal';
 import DetailPanel from '@/components/DetailPanel';
+import SearchBar from '@/components/SearchBar';
 import { ParkingData, ParkingFeature, Filters, DEFAULT_FILTERS } from '@/types/parking';
+import type { MapHandle } from '@/components/Map';
 
 const Map = dynamic(() => import('@/components/Map'), {
   ssr: false,
@@ -54,10 +56,24 @@ export default function Home() {
   const [selectedFacility, setSelectedFacility] = useState<ParkingFeature | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const mapRef = useRef<MapHandle>(null);
 
   const handleSelectFacility = useCallback((feature: ParkingFeature) => {
     setSelectedFacility(feature);
   }, []);
+
+  const handleSearchMunicipality = useCallback((name: string) => {
+    setFilters(prev => ({
+      ...prev,
+      municipalities: prev.municipalities.includes(name) ? prev.municipalities : [name],
+    }));
+  }, []);
+
+  const handleFlyTo = useCallback((lat: number, lng: number, zoom?: number) => {
+    mapRef.current?.flyTo(lat, lng, zoom);
+  }, []);
+
+  const municipalityList = data?.metadata.municipalities ?? [];
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -95,16 +111,28 @@ export default function Home() {
       <header className="bg-white shadow-sm z-20">
         <div className="px-3 py-2 md:px-4 md:py-3 flex items-center gap-2 md:gap-4">
           {/* Logo */}
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 flex items-center gap-1.5">
+            <svg className="w-6 h-6 md:w-7 md:h-7 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+              <rect x="3" y="3" width="18" height="18" rx="3" />
+              <text x="12" y="17" textAnchor="middle" fill="currentColor" stroke="none" fontSize="14" fontWeight="bold" fontFamily="system-ui">P</text>
+            </svg>
             <h1 className="text-lg md:text-xl font-bold text-gray-900">
-              <span className="hidden sm:inline">Parkeerviewer</span>
-              <span className="sm:hidden">Parkeerviewer</span>
+              Parkeerviewer
             </h1>
           </div>
 
           {/* Subtitle */}
-          <div className="hidden md:block text-sm text-gray-500">
+          <div className="hidden lg:block text-sm text-gray-500">
             Parkeerbezetting Nederland
+          </div>
+
+          {/* Search bar */}
+          <div className="hidden sm:flex flex-1 max-w-md mx-2">
+            <SearchBar
+              municipalities={municipalityList}
+              onSelectMunicipality={handleSearchMunicipality}
+              onFlyTo={handleFlyTo}
+            />
           </div>
 
           {/* Loading indicator */}
@@ -163,6 +191,20 @@ export default function Home() {
         {mobileMenuOpen && (
           <div className="lg:hidden border-t border-gray-200 bg-white">
             <div className="px-3 py-2 space-y-1">
+              {/* Mobile search */}
+              <div className="sm:hidden pb-2">
+                <SearchBar
+                  municipalities={municipalityList}
+                  onSelectMunicipality={(name) => {
+                    handleSearchMunicipality(name);
+                    setMobileMenuOpen(false);
+                  }}
+                  onFlyTo={(lat, lng, zoom) => {
+                    handleFlyTo(lat, lng, zoom);
+                    setMobileMenuOpen(false);
+                  }}
+                />
+              </div>
               <Link
                 href="/data-export"
                 className="flex items-center px-3 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition"
@@ -211,12 +253,12 @@ export default function Home() {
         {/* Sidebar */}
         <aside
           className={`
-            fixed md:relative inset-y-0 left-0 z-40 md:z-auto
+            fixed md:relative top-0 bottom-0 left-0 z-40 md:z-auto
             w-[85vw] max-w-[320px] md:w-80
             bg-gray-50 p-3 md:p-4 overflow-y-auto space-y-3 md:space-y-4
             transform transition-transform duration-300 ease-in-out
             ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-            shadow-xl md:shadow-none
+            shadow-xl md:shadow-none safe-bottom
           `}
         >
           {/* Mobile sidebar header */}
@@ -246,39 +288,58 @@ export default function Home() {
         {/* Map */}
         <main className="flex-1 relative">
           <Map
+            ref={mapRef}
             data={data}
             filters={filters}
             onSelectFacility={handleSelectFacility}
             selectedUuid={selectedFacility?.properties.uuid ?? null}
           />
 
-          {/* Mobile floating filter button */}
-          <button
-            onClick={() => setMobileSidebarOpen(true)}
-            className="md:hidden fixed bottom-20 left-4 z-20 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 active:bg-blue-800 transition"
-            aria-label="Filters openen"
-          >
-            <FilterIcon className="w-6 h-6" />
-          </button>
+          {/* Mobile floating filter button - hide when detail panel or sidebar is open */}
+          {!selectedFacility && !mobileSidebarOpen && (
+            <button
+              onClick={() => setMobileSidebarOpen(true)}
+              className="md:hidden fixed bottom-12 left-4 z-20 bg-blue-600 text-white p-3.5 rounded-full shadow-lg hover:bg-blue-700 active:bg-blue-800 transition safe-bottom"
+              aria-label="Filters openen"
+            >
+              <FilterIcon className="w-5 h-5" />
+            </button>
+          )}
         </main>
 
-        {/* Detail panel (right side) */}
+        {/* Detail panel (right side on desktop, bottom sheet on mobile) */}
         {selectedFacility && (
           <>
-            {/* Mobile: overlay */}
+            {/* Overlay */}
             <div
               className="md:hidden fixed inset-0 bg-black/50 z-30"
               onClick={() => setSelectedFacility(null)}
             />
+            {/* Mobile: bottom sheet */}
             <aside
-              className={`
-                fixed md:relative inset-y-0 right-0 z-40 md:z-auto
-                w-[85vw] max-w-[360px] md:w-96
-                border-l border-gray-200
+              className="
+                md:hidden fixed bottom-0 left-0 right-0 z-40
+                max-h-[85vh] rounded-t-2xl
+                shadow-2xl
                 transform transition-transform duration-300 ease-in-out
-                translate-x-0
-                shadow-xl md:shadow-none
-              `}
+                translate-y-0
+                safe-bottom
+              "
+            >
+              <DetailPanel
+                feature={selectedFacility}
+                onClose={() => setSelectedFacility(null)}
+                mobile
+              />
+            </aside>
+            {/* Desktop: right panel */}
+            <aside
+              className="
+                hidden md:block relative z-auto
+                w-96
+                border-l border-gray-200
+                shadow-none
+              "
             >
               <DetailPanel
                 feature={selectedFacility}
@@ -289,18 +350,20 @@ export default function Home() {
         )}
       </div>
 
-      {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 px-3 md:px-4 py-2">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-1 sm:gap-0 text-xs text-gray-500">
+      {/* Footer - hidden on mobile when detail panel is open */}
+      <footer className={`bg-white border-t border-gray-200 px-3 md:px-4 py-1.5 md:py-2 safe-bottom ${selectedFacility ? 'hidden md:block' : ''}`}>
+        <div className="max-w-7xl mx-auto flex justify-between items-center text-[10px] md:text-xs text-gray-500">
           <button
             onClick={() => setShowAbout(true)}
-            className="text-blue-600 hover:text-blue-800 hover:underline focus:outline-none py-1"
+            className="text-blue-600 hover:text-blue-800 hover:underline focus:outline-none py-0.5"
           >
-            Info over databronnen
+            Info
           </button>
           {data && (
-            <p className="text-center sm:text-right">
-              {data.metadata.total_facilities.toLocaleString('nl-NL')} parkeergarages | Update: {new Date(data.metadata.generated_at).toLocaleDateString('nl-NL')}
+            <p className="text-right">
+              <span className="hidden sm:inline">{data.metadata.total_facilities.toLocaleString('nl-NL')} parkeergarages | </span>
+              <span className="sm:hidden">{data.metadata.total_facilities.toLocaleString('nl-NL')} | </span>
+              {new Date(data.metadata.generated_at).toLocaleDateString('nl-NL')}
             </p>
           )}
         </div>

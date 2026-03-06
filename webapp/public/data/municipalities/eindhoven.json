@@ -1,20 +1,51 @@
 {
   "municipality": "Eindhoven",
-  "generated_at": "2026-03-06T14:44:53.208422+00:00",
-  "facility_count": 1,
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
+  "facility_count": 2,
   "facilities": [
     {
       "uuid": "cc7a3d99-d6f6-4407-86bc-008eb47549ea",
       "name": "P+R Fuutlaan (Eindhoven)",
       "operator": "Nederlandse Spoorwegen",
+      "street": "Fuutlaan",
+      "houseNumber": "12",
+      "zipcode": "5613AB",
+      "city": "Eindhoven",
+      "province": "",
       "latitude": 51.44248,
       "longitude": 5.4856,
       "capacity": 130,
-      "vacantSpaces": 52,
-      "occupancyPercent": 60.0,
+      "vacantSpaces": 65,
+      "occupancyPercent": 50.0,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808242
+      "lastUpdated": 1772811283,
+      "minimumHeightInMeters": 0.0,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
+    },
+    {
+      "uuid": "69a54734-54a0-4e32-aef5-328b9d5c57b6",
+      "name": "EINDHOVEN-Witte Dame",
+      "operator": "Q-Park Nederland BV",
+      "street": "",
+      "houseNumber": "",
+      "zipcode": "",
+      "city": "",
+      "province": "",
+      "latitude": 51.44038937,
+      "longitude": 5.47228162,
+      "capacity": 242,
+      "vacantSpaces": 159,
+      "occupancyPercent": 34.3,
+      "open": true,
+      "full": false,
+      "lastUpdated": 1772811521,
+      "minimumHeightInMeters": null,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "Garage parkeren"
     }
   ]
 }

@@ -1,20 +1,29 @@
 {
   "municipality": "Zutphen",
-  "generated_at": "2026-03-06T14:44:53.208422+00:00",
+  "generated_at": "2026-03-06T15:39:13.228341+00:00",
   "facility_count": 1,
   "facilities": [
     {
       "uuid": "7b4e7874-59b9-4e9c-9486-206453b5a2a5",
       "name": "P+R Lijmerij (Zutphen)",
       "operator": "Nederlandse Spoorwegen",
+      "street": "Lijmerij",
+      "houseNumber": "2",
+      "zipcode": "7202AZ",
+      "city": "Zutphen",
+      "province": "",
       "latitude": 52.145233,
       "longitude": 6.192855,
       "capacity": 308,
-      "vacantSpaces": 269,
-      "occupancyPercent": 12.7,
+      "vacantSpaces": 284,
+      "occupancyPercent": 7.8,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808062
+      "lastUpdated": 1772811452,
+      "minimumHeightInMeters": 2.1,
+      "chargingPointCapacity": 0,
+      "disabledAccess": false,
+      "usage": "P+R"
     }
   ]
 }
