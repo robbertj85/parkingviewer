@@ -1,6 +1,6 @@
 {
   "municipality": "Delft",
-  "generated_at": "2026-03-06T14:43:21.435490+00:00",
+  "generated_at": "2026-03-06T14:44:53.208422+00:00",
   "facility_count": 3,
   "facilities": [
     {
@@ -10,11 +10,11 @@
       "latitude": 52.010766,
       "longitude": 4.354602,
       "capacity": 201,
-      "vacantSpaces": 45,
-      "occupancyPercent": 77.6,
+      "vacantSpaces": 46,
+      "occupancyPercent": 77.1,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808181
+      "lastUpdated": 1772808271
     },
     {
       "uuid": "333f3516-1869-43fc-a84a-24c2356049b9",
@@ -23,11 +23,11 @@
       "latitude": 52.008015,
       "longitude": 4.363065,
       "capacity": 810,
-      "vacantSpaces": 305,
-      "occupancyPercent": 62.3,
+      "vacantSpaces": 307,
+      "occupancyPercent": 62.1,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808181
+      "lastUpdated": 1772808271
     },
     {
       "uuid": "c4172abb-8ad1-446a-8c35-ddb310d1a0f9",
@@ -40,7 +40,7 @@
       "occupancyPercent": 32.6,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808181
+      "lastUpdated": 1772808271
     }
   ]
 }

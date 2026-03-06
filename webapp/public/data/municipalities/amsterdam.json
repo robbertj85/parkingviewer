@@ -1,6 +1,6 @@
 {
   "municipality": "Amsterdam",
-  "generated_at": "2026-03-06T14:43:21.435490+00:00",
+  "generated_at": "2026-03-06T14:44:53.208422+00:00",
   "facility_count": 19,
   "facilities": [
     {
@@ -14,7 +14,7 @@
       "occupancyPercent": 100.0,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808183
+      "lastUpdated": 1772808272
     },
     {
       "uuid": "e0f088ad-f1ee-40c4-ae79-170aa0784dd9",
@@ -27,7 +27,7 @@
       "occupancyPercent": 13.6,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808160
+      "lastUpdated": 1772808250
     },
     {
       "uuid": "0ab22af9-911d-4cfb-9ac5-6c327aa48be2",
@@ -53,7 +53,7 @@
       "occupancyPercent": 94.0,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808180
+      "lastUpdated": 1772808270
     },
     {
       "uuid": "4a9684bf-f532-4248-9f43-1334233dc5d5",
@@ -62,11 +62,11 @@
       "latitude": 52.3366,
       "longitude": 4.861061,
       "capacity": 449,
-      "vacantSpaces": 271,
-      "occupancyPercent": 39.6,
+      "vacantSpaces": 274,
+      "occupancyPercent": 39.0,
       "open": false,
       "full": false,
-      "lastUpdated": 1772808180
+      "lastUpdated": 1772808270
     },
     {
       "uuid": "7035fbb3-74a2-43e9-b873-e8d7ddb03fd3",
@@ -75,11 +75,11 @@
       "latitude": 52.314024,
       "longitude": 4.940788,
       "capacity": 1810,
-      "vacantSpaces": 1464,
-      "occupancyPercent": 19.1,
+      "vacantSpaces": 1466,
+      "occupancyPercent": 19.0,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808154
+      "lastUpdated": 1772808274
     },
     {
       "uuid": "eb79ab5a-abd5-4a48-8f6c-e21dbfe545d2",
@@ -87,12 +87,12 @@
       "operator": "APCOA Parking",
       "latitude": 52.357512,
       "longitude": 4.892585,
-      "capacity": 167,
-      "vacantSpaces": 167,
+      "capacity": 166,
+      "vacantSpaces": 166,
       "occupancyPercent": 0.0,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808159
+      "lastUpdated": 1772808279
     },
     {
       "uuid": "2a04ec9c-2b8c-43c3-9ae4-2e1e97a2e0bb",
@@ -105,7 +105,7 @@
       "occupancyPercent": 63.2,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808186
+      "lastUpdated": 1772808276
     },
     {
       "uuid": "43878fed-4dbf-4aef-a2b9-80168d11b5aa",
@@ -114,11 +114,11 @@
       "latitude": 52.311382,
       "longitude": 4.93943,
       "capacity": 1067,
-      "vacantSpaces": 1021,
-      "occupancyPercent": 4.3,
+      "vacantSpaces": 1023,
+      "occupancyPercent": 4.1,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808186
+      "lastUpdated": 1772808276
     },
     {
       "uuid": "92871f2d-d779-418c-a07f-888a87447539",
@@ -131,7 +131,7 @@
       "occupancyPercent": 0.0,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808184
+      "lastUpdated": 1772808274
     },
     {
       "uuid": "1fc4f305-8d3f-4626-af10-a145c5834554",
@@ -157,7 +157,7 @@
       "occupancyPercent": 1.8,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808178
+      "lastUpdated": 1772808268
     },
     {
       "uuid": "c2b50ef9-12a3-4ac5-b2b4-8bf0d896c98b",
@@ -170,7 +170,7 @@
       "occupancyPercent": 36.2,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808180
+      "lastUpdated": 1772808270
     },
     {
       "uuid": "ddcdd081-6046-4847-8438-dcea6ab51ccd",
@@ -196,7 +196,7 @@
       "occupancyPercent": 0.0,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808194
+      "lastUpdated": 1772808284
     },
     {
       "uuid": "6b50b2e9-1d84-444d-a1d4-d09b0421a226",
@@ -205,11 +205,11 @@
       "latitude": 52.336628,
       "longitude": 4.860764,
       "capacity": 449,
-      "vacantSpaces": 271,
-      "occupancyPercent": 39.6,
+      "vacantSpaces": 274,
+      "occupancyPercent": 39.0,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808180
+      "lastUpdated": 1772808270
     },
     {
       "uuid": "bbd15dc0-b00a-47ca-bbda-799883106891",
@@ -222,7 +222,7 @@
       "occupancyPercent": 74.0,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808178
+      "lastUpdated": 1772808268
     },
     {
       "uuid": "790997a0-7f72-4b8d-8f20-5272092a4caa",
@@ -231,11 +231,11 @@
       "latitude": 52.333791,
       "longitude": 4.863144,
       "capacity": 616,
-      "vacantSpaces": 173,
-      "occupancyPercent": 71.9,
+      "vacantSpaces": 175,
+      "occupancyPercent": 71.6,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808178
+      "lastUpdated": 1772808268
     },
     {
       "uuid": "b41c7c26-ac01-4a88-a2ae-d4fb1b51919e",
@@ -244,11 +244,11 @@
       "latitude": 52.367212,
       "longitude": 4.890879,
       "capacity": 84,
-      "vacantSpaces": 42,
-      "occupancyPercent": 50.0,
+      "vacantSpaces": 44,
+      "occupancyPercent": 47.6,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808008
+      "lastUpdated": 1772808166
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "municipality": "Den Haag",
-  "generated_at": "2026-03-06T14:43:21.435490+00:00",
+  "generated_at": "2026-03-06T14:44:53.208422+00:00",
   "facility_count": 9,
   "facilities": [
     {
@@ -36,11 +36,11 @@
       "latitude": 52.076747,
       "longitude": 4.315006,
       "capacity": 100,
-      "vacantSpaces": 75,
-      "occupancyPercent": 25.0,
+      "vacantSpaces": 74,
+      "occupancyPercent": 26.0,
       "open": true,
       "full": false,
-      "lastUpdated": 1772807638
+      "lastUpdated": 1772808234
     },
     {
       "uuid": "2e7daa83-19e3-4133-8d57-3911d7681d40",
@@ -88,11 +88,11 @@
       "latitude": 52.07847,
       "longitude": 4.34398,
       "capacity": 129,
-      "vacantSpaces": 83,
-      "occupancyPercent": 35.7,
+      "vacantSpaces": 84,
+      "occupancyPercent": 34.9,
       "open": true,
       "full": false,
-      "lastUpdated": 1772807811
+      "lastUpdated": 1772808227
     },
     {
       "uuid": "ca495787-8e55-4c7d-933b-c3192b40ddb8",
@@ -101,11 +101,11 @@
       "latitude": 52.079996,
       "longitude": 4.321658,
       "capacity": 131,
-      "vacantSpaces": 116,
-      "occupancyPercent": 11.5,
+      "vacantSpaces": 118,
+      "occupancyPercent": 9.9,
       "open": true,
       "full": true,
-      "lastUpdated": 1772807613
+      "lastUpdated": 1772808227
     },
     {
       "uuid": "34c37f55-160a-47fb-a659-35d74f70907b",
@@ -118,7 +118,7 @@
       "occupancyPercent": 116.5,
       "open": true,
       "full": true,
-      "lastUpdated": "1772808056"
+      "lastUpdated": "1772808128"
     }
   ]
 }

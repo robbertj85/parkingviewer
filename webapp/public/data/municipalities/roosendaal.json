@@ -1,6 +1,6 @@
 {
   "municipality": "Roosendaal",
-  "generated_at": "2026-03-06T14:43:21.435490+00:00",
+  "generated_at": "2026-03-06T14:44:53.208422+00:00",
   "facility_count": 7,
   "facilities": [
     {
@@ -75,11 +75,11 @@
       "latitude": 51.5394,
       "longitude": 4.45789,
       "capacity": 110,
-      "vacantSpaces": 73,
-      "occupancyPercent": 33.6,
+      "vacantSpaces": 75,
+      "occupancyPercent": 31.8,
       "open": true,
       "full": false,
-      "lastUpdated": 1772808072
+      "lastUpdated": 1772808247
     },
     {
       "uuid": "656ec2fe-54a8-4e3c-8118-2182adc93bd1",
