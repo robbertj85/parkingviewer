@@ -1,6 +1,6 @@
 {
   "municipality": "Odijkerweg, Zeist",
-  "generated_at": "2026-03-06T22:36:10.677570+00:00",
+  "generated_at": "2026-03-06T23:34:57.064409+00:00",
   "facility_count": 1,
   "facilities": [
     {
@@ -15,11 +15,11 @@
       "latitude": 52.064487,
       "longitude": 5.258174,
       "capacity": 568,
-      "vacantSpaces": 539,
-      "occupancyPercent": 5.1,
+      "vacantSpaces": 553,
+      "occupancyPercent": 2.6,
       "open": true,
       "full": false,
-      "lastUpdated": 1772836348,
+      "lastUpdated": 1772839972,
       "minimumHeightInMeters": null,
       "chargingPointCapacity": 0,
       "disabledAccess": false,

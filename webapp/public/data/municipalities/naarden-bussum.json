@@ -1,6 +1,6 @@
 {
   "municipality": "Naarden-Bussum",
-  "generated_at": "2026-03-06T22:36:10.677570+00:00",
+  "generated_at": "2026-03-06T23:34:57.064409+00:00",
   "facility_count": 1,
   "facilities": [
     {
@@ -15,11 +15,11 @@
       "latitude": 52.28006,
       "longitude": 5.15665,
       "capacity": 93,
-      "vacantSpaces": 80,
-      "occupancyPercent": 14.0,
+      "vacantSpaces": 85,
+      "occupancyPercent": 8.6,
       "open": true,
       "full": false,
-      "lastUpdated": 1772836199,
+      "lastUpdated": 1772839799,
       "minimumHeightInMeters": null,
       "chargingPointCapacity": 0,
       "disabledAccess": false,
