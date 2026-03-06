@@ -1,6 +1,6 @@
 {
   "municipality": "Naaldwijk",
-  "generated_at": "2026-03-06T21:36:40.153810+00:00",
+  "generated_at": "2026-03-06T22:36:10.677570+00:00",
   "facility_count": 1,
   "facilities": [
     {
@@ -19,7 +19,7 @@
       "occupancyPercent": 0.5,
       "open": true,
       "full": false,
-      "lastUpdated": 1772832519,
+      "lastUpdated": 1772835835,
       "minimumHeightInMeters": null,
       "chargingPointCapacity": 0,
       "disabledAccess": false,
