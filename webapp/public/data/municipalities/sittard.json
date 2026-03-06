@@ -1,6 +1,6 @@
 {
   "municipality": "Sittard",
-  "generated_at": "2026-03-06T16:52:50.468545+00:00",
+  "generated_at": "2026-03-06T17:41:15.691876+00:00",
   "facility_count": 1,
   "facilities": [
     {
@@ -15,11 +15,11 @@
       "latitude": 51.001739,
       "longitude": 5.857042,
       "capacity": 495,
-      "vacantSpaces": 264,
-      "occupancyPercent": 46.7,
+      "vacantSpaces": 294,
+      "occupancyPercent": 40.6,
       "open": true,
       "full": false,
-      "lastUpdated": 1772815872,
+      "lastUpdated": 1772818413,
       "minimumHeightInMeters": null,
       "chargingPointCapacity": 0,
       "disabledAccess": false,

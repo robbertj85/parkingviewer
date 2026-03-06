@@ -1,6 +1,6 @@
 {
   "municipality": "Rotterdam Centraal",
-  "generated_at": "2026-03-06T16:52:50.468545+00:00",
+  "generated_at": "2026-03-06T17:41:15.691876+00:00",
   "facility_count": 1,
   "facilities": [
     {
@@ -15,11 +15,11 @@
       "latitude": 51.92616,
       "longitude": 4.46987,
       "capacity": 107,
-      "vacantSpaces": 93,
-      "occupancyPercent": 13.1,
+      "vacantSpaces": 97,
+      "occupancyPercent": 9.3,
       "open": true,
       "full": false,
-      "lastUpdated": 1772815639,
+      "lastUpdated": 1772818812,
       "minimumHeightInMeters": null,
       "chargingPointCapacity": 0,
       "disabledAccess": false,
