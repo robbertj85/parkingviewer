@@ -1,6 +1,6 @@
 {
   "municipality": "A50",
-  "generated_at": "2026-03-06T19:39:17.715790+00:00",
+  "generated_at": "2026-03-06T20:40:03.716331+00:00",
   "facility_count": 1,
   "facilities": [
     {
@@ -19,7 +19,7 @@
       "occupancyPercent": 14.4,
       "open": true,
       "full": false,
-      "lastUpdated": 1772825700,
+      "lastUpdated": 1772829300,
       "minimumHeightInMeters": null,
       "chargingPointCapacity": 0,
       "disabledAccess": false,
