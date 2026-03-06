@@ -1,0 +1,144 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Parkeerviewer API",
+    "description": "REST API voor toegang tot parkeergarage bezettingsdata in Nederland.\n\nData is afkomstig van de **SPDP v2 Open Parkeerdata API** - het landelijke platform\nvoor parkeerdata van het Nationaal Parkeer Register.\n\n## Kenmerken\n- **Real-time data** - Bezettingsdata wordt elk uur gesynchroniseerd\n- **Filtering** - Filter op gemeente, exploitant of status\n- **Export** - Download data in GeoJSON, JSON of CSV formaat\n- **Historisch** - Uurlijkse snapshots worden opgeslagen\n- **Geen authenticatie** - De API is vrij toegankelijk\n\n## Bezettingsindicatie\n\n| Status | Bezettingsgraad |\n|--------|----------------|\n| Rustig | < 30% |\n| Beschikbaar | 30-60% |\n| Druk | 60-80% |\n| Bijna vol | 80-95% |\n| Vol | > 95% |\n\n## Data\nDe brondata is gepubliceerd onder CC-0 (publiek domein).\n",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Parkeerviewer"
+    },
+    "license": {
+      "name": "CC-0",
+      "url": "https://creativecommons.org/publicdomain/zero/1.0/"
+    }
+  },
+  "servers": [
+    {
+      "url": "/api/v1",
+      "description": "API v1"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Parkeergarages",
+      "description": "Endpoints voor parkeergarage data"
+    },
+    {
+      "name": "Export",
+      "description": "Data export functionaliteit"
+    }
+  ],
+  "paths": {
+    "/facilities": {
+      "get": {
+        "summary": "Lijst parkeergarages",
+        "description": "Haal een gepagineerde lijst op van alle parkeergarages met bezettingsdata.\n\nResultaten kunnen gefilterd worden op gemeente, exploitant of status.\n",
+        "operationId": "getFacilities",
+        "tags": ["Parkeergarages"],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Paginanummer (1-indexed)",
+            "schema": { "type": "integer", "default": 1, "minimum": 1 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Aantal resultaten per pagina (max 500)",
+            "schema": { "type": "integer", "default": 100, "minimum": 1, "maximum": 500 }
+          },
+          {
+            "name": "municipality",
+            "in": "query",
+            "description": "Filter op gemeente naam",
+            "schema": { "type": "string" },
+            "example": "Amsterdam"
+          },
+          {
+            "name": "operator",
+            "in": "query",
+            "description": "Filter op exploitant naam",
+            "schema": { "type": "string" },
+            "example": "Q-Park"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Filter op status",
+            "schema": { "type": "string", "enum": ["open", "full"] }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lijst van parkeergarages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "total": { "type": "integer", "description": "Totaal aantal resultaten" },
+                    "page": { "type": "integer" },
+                    "limit": { "type": "integer" },
+                    "pages": { "type": "integer", "description": "Totaal aantal pagina's" },
+                    "facilities": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Facility" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/export": {
+      "get": {
+        "summary": "Exporteer data",
+        "description": "Download de volledige dataset in het gewenste formaat.",
+        "operationId": "exportData",
+        "tags": ["Export"],
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "description": "Export formaat",
+            "schema": { "type": "string", "enum": ["geojson", "json", "csv"], "default": "json" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Geexporteerde data",
+            "content": {
+              "application/json": {},
+              "application/geo+json": {},
+              "text/csv": {}
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Facility": {
+        "type": "object",
+        "properties": {
+          "uuid": { "type": "string", "description": "Unieke identifier (SPDP v2 UUID)" },
+          "name": { "type": "string", "description": "Naam van de parkeergarage" },
+          "municipality": { "type": "string", "description": "Gemeente" },
+          "operator": { "type": "string", "description": "Exploitant" },
+          "latitude": { "type": "number", "description": "Breedtegraad (WGS84)" },
+          "longitude": { "type": "number", "description": "Lengtegraad (WGS84)" },
+          "capacity": { "type": "integer", "nullable": true, "description": "Totale capaciteit" },
+          "vacantSpaces": { "type": "integer", "nullable": true, "description": "Aantal vrije plaatsen" },
+          "occupancyPercent": { "type": "number", "nullable": true, "description": "Bezettingspercentage (0-100)" },
+          "open": { "type": "boolean", "nullable": true, "description": "Is de garage open" },
+          "full": { "type": "boolean", "nullable": true, "description": "Is de garage vol" },
+          "lastUpdated": { "type": "integer", "nullable": true, "description": "Unix timestamp van laatste update" }
+        }
+      }
+    }
+  }
+}

@@ -8,6 +8,15 @@ interface StatsPanelProps {
   filters: Filters;
 }
 
+const OCCUPANCY_CATEGORIES = [
+  { key: 'quiet', label: 'Rustig', color: '#16a34a', test: (pct: number | null) => pct !== null && pct < 30 },
+  { key: 'available', label: 'Beschikbaar', color: '#22c55e', test: (pct: number | null) => pct !== null && pct >= 30 && pct < 60 },
+  { key: 'busy', label: 'Druk', color: '#eab308', test: (pct: number | null) => pct !== null && pct >= 60 && pct < 80 },
+  { key: 'almostFull', label: 'Bijna vol', color: '#f97316', test: (pct: number | null) => pct !== null && pct >= 80 && pct < 95 },
+  { key: 'full', label: 'Vol', color: '#dc2626', test: (pct: number | null) => pct !== null && pct >= 95 },
+  { key: 'unknown', label: 'Onbekend', color: '#6b7280', test: (pct: number | null) => pct === null },
+];
+
 export default function StatsPanel({ data, filters }: StatsPanelProps) {
   const stats = useMemo(() => {
     if (!data) return null;
@@ -24,26 +33,28 @@ export default function StatsPanel({ data, filters }: StatsPanelProps) {
 
     let totalCapacity = 0;
     let totalVacant = 0;
-    let openCount = 0;
-    let fullCount = 0;
     const muniCounts: Record<string, number> = {};
+    const categoryCounts: Record<string, number> = {};
+
+    OCCUPANCY_CATEGORIES.forEach(cat => { categoryCounts[cat.key] = 0; });
 
     filtered.forEach((f) => {
       const p = f.properties;
       totalCapacity += p.capacity || 0;
       totalVacant += p.vacantSpaces || 0;
-      if (p.open) openCount++;
-      if (p.full) fullCount++;
       muniCounts[p.municipality] = (muniCounts[p.municipality] || 0) + 1;
+
+      for (const cat of OCCUPANCY_CATEGORIES) {
+        if (cat.test(p.occupancyPercent)) {
+          categoryCounts[cat.key]++;
+          break;
+        }
+      }
     });
 
     const topMunicipalities = Object.entries(muniCounts)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5);
-
-    const occupancyPct = totalCapacity > 0
-      ? Math.round(((totalCapacity - totalVacant) / totalCapacity) * 100)
-      : null;
 
     return {
       total: data.metadata.total_facilities,
@@ -51,9 +62,7 @@ export default function StatsPanel({ data, filters }: StatsPanelProps) {
       totalCapacity,
       totalVacant,
       totalOccupied: totalCapacity - totalVacant,
-      occupancyPct,
-      openCount,
-      fullCount,
+      categoryCounts,
       topMunicipalities,
       uniqueMunicipalities: data.metadata.municipalities.length,
     };
@@ -71,79 +80,102 @@ export default function StatsPanel({ data, filters }: StatsPanelProps) {
     );
   }
 
-  const occupancyColor = getOccupancyColor(stats.occupancyPct);
-
   return (
-    <div className="space-y-3">
-      {/* Main stats */}
-      <div className="stats-gradient rounded-lg p-4 text-white">
-        <div className="text-sm opacity-80">Parkeergarages</div>
-        <div className="text-3xl font-bold">{stats.filtered.toLocaleString('nl-NL')}</div>
-        {stats.filtered !== stats.total && (
-          <div className="text-xs opacity-70">van {stats.total} totaal</div>
-        )}
-        <div className="text-sm mt-1 opacity-80">{stats.uniqueMunicipalities} gemeenten</div>
+    <div className="bg-white rounded-lg shadow-sm p-4 space-y-4">
+      {/* Main count */}
+      <div>
+        <div className="flex items-baseline gap-2">
+          <span className="text-2xl font-bold text-gray-900">{stats.filtered.toLocaleString('nl-NL')}</span>
+          {stats.filtered !== stats.total && (
+            <span className="text-sm text-gray-400">/ {stats.total.toLocaleString('nl-NL')}</span>
+          )}
+          <span className="text-sm text-gray-500">parkeergarages</span>
+        </div>
+        <p className="text-xs text-gray-400 mt-1">
+          {stats.uniqueMunicipalities} gemeenten
+        </p>
       </div>
 
-      {/* Occupancy overview */}
-      <div className="bg-white rounded-lg shadow-sm p-4">
-        <h3 className="text-sm font-medium text-gray-700 mb-3">Bezettingsoverzicht</h3>
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-500">Totale capaciteit</span>
-            <span className="font-medium">{stats.totalCapacity.toLocaleString('nl-NL')}</span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-500">Bezet</span>
-            <span className="font-medium">{stats.totalOccupied.toLocaleString('nl-NL')}</span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-500">Vrij</span>
-            <span className="font-medium text-green-600">{stats.totalVacant.toLocaleString('nl-NL')}</span>
-          </div>
-          {stats.occupancyPct !== null && (
-            <div className="mt-2">
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-gray-500">Bezettingsgraad</span>
-                <span className="font-bold" style={{ color: occupancyColor }}>{stats.occupancyPct}%</span>
-              </div>
-              <div className="occupancy-bar">
+      {/* Occupancy breakdown */}
+      <div>
+        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Bezettingsgraad</h3>
+        <div className="space-y-1.5">
+          {OCCUPANCY_CATEGORIES.map((cat) => {
+            const count = stats.categoryCounts[cat.key];
+            const percentage = stats.filtered > 0 ? (count / stats.filtered) * 100 : 0;
+
+            return (
+              <div key={cat.key} className="flex items-center gap-2">
                 <div
-                  className="occupancy-fill"
-                  style={{ width: `${Math.min(stats.occupancyPct, 100)}%`, background: occupancyColor }}
+                  className="w-3 h-3 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: cat.color }}
                 />
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-gray-600 truncate">{cat.label}</span>
+                    <span className="text-gray-900 font-medium ml-2">{count}</span>
+                  </div>
+                  <div className="h-1 bg-gray-100 rounded-full overflow-hidden mt-0.5">
+                    <div
+                      className="h-full rounded-full transition-all duration-300"
+                      style={{
+                        width: `${percentage}%`,
+                        backgroundColor: cat.color,
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })}
         </div>
       </div>
 
-      {/* Status counts */}
-      <div className="bg-white rounded-lg shadow-sm p-4">
-        <h3 className="text-sm font-medium text-gray-700 mb-3">Status</h3>
-        <div className="grid grid-cols-2 gap-2">
-          <div className="bg-green-50 rounded-lg p-2 text-center">
-            <div className="text-lg font-bold text-green-600">{stats.openCount}</div>
-            <div className="text-xs text-green-700">Open</div>
+      {/* Capacity summary */}
+      <div>
+        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Capaciteit</h3>
+        <div className="space-y-0.5">
+          <div className="flex justify-between text-xs">
+            <span className="text-gray-600">Totale capaciteit</span>
+            <span className="text-gray-900 font-medium">{stats.totalCapacity.toLocaleString('nl-NL')}</span>
           </div>
-          <div className="bg-red-50 rounded-lg p-2 text-center">
-            <div className="text-lg font-bold text-red-600">{stats.fullCount}</div>
-            <div className="text-xs text-red-700">Vol</div>
+          <div className="flex justify-between text-xs">
+            <span className="text-gray-600">Bezet</span>
+            <span className="text-gray-900 font-medium">{stats.totalOccupied.toLocaleString('nl-NL')}</span>
+          </div>
+          <div className="flex justify-between text-xs">
+            <span className="text-gray-600">Vrij</span>
+            <span className="text-green-600 font-medium">{stats.totalVacant.toLocaleString('nl-NL')}</span>
           </div>
         </div>
       </div>
 
       {/* Top municipalities */}
-      <div className="bg-white rounded-lg shadow-sm p-4">
-        <h3 className="text-sm font-medium text-gray-700 mb-3">Top gemeenten</h3>
-        <div className="space-y-2">
+      <div>
+        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Top Gemeenten</h3>
+        <div className="space-y-0.5">
           {stats.topMunicipalities.map(([name, count]) => (
-            <div key={name} className="flex justify-between items-center text-sm">
-              <span className="text-gray-600 truncate mr-2">{name}</span>
-              <span className="text-gray-900 font-medium flex-shrink-0">{count}</span>
+            <div key={name} className="flex justify-between text-xs">
+              <span className="text-gray-600 truncate">{name}</span>
+              <span className="text-gray-900 font-medium ml-2">{count}</span>
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Data source */}
+      <div className="pt-2 border-t border-gray-100">
+        <p className="text-xs text-gray-400">
+          Bron:{' '}
+          <a
+            href="https://npropendata.rdw.nl/parkingdata/v2"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:underline"
+          >
+            Open Parkeerdata (SPDP v2)
+          </a>
+        </p>
       </div>
     </div>
   );
