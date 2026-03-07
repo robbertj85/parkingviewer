@@ -6,6 +6,7 @@ import Link from 'next/link';
 import StatsPanel from '@/components/StatsPanel';
 import FilterPanel from '@/components/FilterPanel';
 import AboutModal from '@/components/AboutModal';
+import FeedbackModal from '@/components/FeedbackModal';
 import DetailPanel from '@/components/DetailPanel';
 import SearchBar from '@/components/SearchBar';
 import { ParkingData, ParkingFeature, Filters, DEFAULT_FILTERS } from '@/types/parking';
@@ -53,6 +54,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [showAbout, setShowAbout] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
   const [selectedFacility, setSelectedFacility] = useState<ParkingFeature | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -175,6 +177,15 @@ export default function Home() {
               </svg>
               Over
             </button>
+            <button
+              onClick={() => setShowFeedback(true)}
+              className="px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition flex items-center"
+            >
+              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+              </svg>
+              Feedback
+            </button>
           </div>
 
           {/* Mobile menu button */}
@@ -234,6 +245,18 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 Over dit project
+              </button>
+              <button
+                onClick={() => {
+                  setShowFeedback(true);
+                  setMobileMenuOpen(false);
+                }}
+                className="w-full flex items-center px-3 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition"
+              >
+                <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                </svg>
+                Feedback
               </button>
             </div>
           </div>
@@ -371,6 +394,7 @@ export default function Home() {
 
       {/* About Modal */}
       <AboutModal isOpen={showAbout} onClose={() => setShowAbout(false)} />
+      <FeedbackModal isOpen={showFeedback} onClose={() => setShowFeedback(false)} />
     </div>
   );
 }
