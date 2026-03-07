@@ -1,8 +1,48 @@
 'use client';
 
-import { useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
+import { useEffect, useRef, useImperativeHandle, forwardRef, useState } from 'react';
 import L from 'leaflet';
 import { ParkingData, ParkingFeature, Filters, getOccupancyColor } from '@/types/parking';
+
+const TILE_LAYERS: Record<string, { name: string; url: string; attribution: string; subdomains?: string; maxZoom?: number }> = {
+  cartodb: {
+    name: 'CartoDB Light',
+    url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 19,
+  },
+  osm: {
+    name: 'OpenStreetMap',
+    url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19,
+  },
+  transport: {
+    name: 'Transport',
+    url: 'https://tile.thunderforest.com/transport/{z}/{x}/{y}.png?apikey=6170aad10dfd42a38d4d8c709a536f38',
+    attribution: '&copy; <a href="https://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 22,
+  },
+  shortbread: {
+    name: 'Shortbread',
+    url: 'https://tile.openstreetmap.de/{z}/{x}/{y}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 18,
+  },
+  esri_satellite: {
+    name: 'Satellite (Esri)',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    attribution: '&copy; Esri, Maxar, Earthstar Geographics',
+    maxZoom: 19,
+  },
+  google_satellite: {
+    name: 'Satellite (Google)',
+    url: 'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+    attribution: '&copy; Google',
+    maxZoom: 20,
+  },
+};
 
 interface MapProps {
   data: ParkingData | null;
@@ -20,6 +60,8 @@ const Map = forwardRef<MapHandle, MapProps>(function Map({ data, filters, onSele
   const markersRef = useRef<L.LayerGroup | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const markerMapRef = useRef<Record<string, L.Marker>>({});
+  const tileLayerRef = useRef<L.TileLayer | null>(null);
+  const [activeLayer, setActiveLayer] = useState('cartodb');
 
   // Initialize map
   useEffect(() => {
@@ -34,10 +76,11 @@ const Map = forwardRef<MapHandle, MapProps>(function Map({ data, filters, onSele
     // Add zoom control to top-right to avoid conflict with mobile filter button
     L.control.zoom({ position: 'topright' }).addTo(map);
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
-      subdomains: 'abcd',
-      maxZoom: 19,
+    const layer = TILE_LAYERS.cartodb;
+    tileLayerRef.current = L.tileLayer(layer.url, {
+      attribution: layer.attribution,
+      subdomains: layer.subdomains || 'abc',
+      maxZoom: layer.maxZoom || 19,
     }).addTo(map);
 
     markersRef.current = L.layerGroup().addTo(map);
@@ -48,6 +91,27 @@ const Map = forwardRef<MapHandle, MapProps>(function Map({ data, filters, onSele
       mapRef.current = null;
     };
   }, []);
+
+  // Switch tile layer
+  useEffect(() => {
+    if (!mapRef.current) return;
+    const config = TILE_LAYERS[activeLayer];
+    if (!config) return;
+
+    if (tileLayerRef.current) {
+      mapRef.current.removeLayer(tileLayerRef.current);
+    }
+    tileLayerRef.current = L.tileLayer(config.url, {
+      attribution: config.attribution,
+      subdomains: config.subdomains || 'abc',
+      maxZoom: config.maxZoom || 19,
+    }).addTo(mapRef.current);
+
+    // Ensure tile layer is behind markers
+    if (tileLayerRef.current) {
+      tileLayerRef.current.setZIndex(0);
+    }
+  }, [activeLayer]);
 
   useImperativeHandle(ref, () => ({
     flyTo: (lat: number, lng: number, zoom?: number) => {
@@ -124,7 +188,22 @@ const Map = forwardRef<MapHandle, MapProps>(function Map({ data, filters, onSele
     }
   }, [selectedUuid, data]);
 
-  return <div ref={containerRef} className="w-full h-full" />;
+  return (
+    <div className="relative w-full h-full">
+      <div ref={containerRef} className="w-full h-full" />
+      <div className="absolute bottom-5 right-3 z-[1000]">
+        <select
+          value={activeLayer}
+          onChange={(e) => setActiveLayer(e.target.value)}
+          className="bg-white border border-gray-300 rounded-md shadow-sm px-2 py-1 text-sm text-gray-700 cursor-pointer hover:border-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        >
+          {Object.entries(TILE_LAYERS).map(([key, layer]) => (
+            <option key={key} value={key}>{layer.name}</option>
+          ))}
+        </select>
+      </div>
+    </div>
+  );
 });
 
 export default Map;
