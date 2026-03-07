@@ -117,7 +117,7 @@ export default function Home() {
               <text x="12" y="17" textAnchor="middle" fill="currentColor" stroke="none" fontSize="14" fontWeight="bold" fontFamily="system-ui">P</text>
             </svg>
             <h1 className="text-lg md:text-xl font-bold text-gray-900">
-              Parkeerviewer
+              Parkeerdataviewer
             </h1>
           </div>
 

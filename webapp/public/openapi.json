@@ -1,11 +1,11 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "Parkeerviewer API",
+    "title": "Parkeerdataviewer API",
     "description": "REST API voor toegang tot parkeergarage bezettingsdata in Nederland.\n\nData is afkomstig van de **SPDP v2 Open Parkeerdata API** - het landelijke platform\nvoor parkeerdata van het Nationaal Parkeer Register.\n\n## Kenmerken\n- **Real-time data** - Bezettingsdata wordt elk uur gesynchroniseerd\n- **Filtering** - Filter op gemeente, exploitant of status\n- **Export** - Download data in GeoJSON, JSON of CSV formaat\n- **Historisch** - Uurlijkse snapshots worden opgeslagen\n- **Geen authenticatie** - De API is vrij toegankelijk\n\n## Bezettingsindicatie\n\n| Status | Bezettingsgraad |\n|--------|----------------|\n| Rustig | < 30% |\n| Beschikbaar | 30-60% |\n| Druk | 60-80% |\n| Bijna vol | 80-95% |\n| Vol | > 95% |\n\n## Data\nDe brondata is gepubliceerd onder CC-0 (publiek domein).\n",
     "version": "1.0.0",
     "contact": {
-      "name": "Parkeerviewer"
+      "name": "Parkeerdataviewer"
     },
     "license": {
       "name": "CC-0",

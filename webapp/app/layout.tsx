@@ -3,12 +3,12 @@ import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Parkeerviewer - Parkeerbezetting Nederland",
+  title: "Parkeerdataviewer - Parkeerbezetting Nederland",
   description: "Real-time parkeerbezetting van parkeergarages in Nederland. Bekijk beschikbaarheid, bezettingsgraad en historische data van het NPR/RDW netwerk.",
   keywords: ["parkeren", "parkeergarage", "Nederland", "bezetting", "NPR", "RDW", "real-time"],
-  authors: [{ name: "Parkeerviewer" }],
+  authors: [{ name: "Parkeerdataviewer" }],
   openGraph: {
-    title: "Parkeerviewer - Parkeerbezetting Nederland",
+    title: "Parkeerdataviewer - Parkeerbezetting Nederland",
     description: "Real-time parkeerbezetting van parkeergarages in Nederland",
     type: "website",
   },

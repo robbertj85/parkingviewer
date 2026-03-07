@@ -79,14 +79,18 @@ const Map = forwardRef<MapHandle, MapProps>(function Map({ data, filters, onSele
       const [lng, lat] = feature.geometry.coordinates;
       const color = getOccupancyColor(properties.occupancyPercent);
       const isSelected = properties.uuid === selectedUuid;
+      const isStale = properties.lastUpdated
+        ? (Date.now() / 1000 - properties.lastUpdated) > 24 * 60 * 60
+        : false;
 
       const size = isSelected ? 18 : 14;
       const borderWidth = isSelected ? 3 : 2;
       const borderColor = isSelected ? '#2563eb' : 'white';
+      const opacity = isStale ? 'opacity:0.5;' : '';
 
       const icon = L.divIcon({
         className: 'parking-marker',
-        html: `<div class="marker-icon" style="width:${size}px;height:${size}px;background:${color};border:${borderWidth}px solid ${borderColor};${isSelected ? 'box-shadow:0 0 0 3px rgba(37,99,235,0.3),0 2px 4px rgba(0,0,0,0.3);z-index:1000!important;' : ''}"></div>`,
+        html: `<div class="marker-icon" style="width:${size}px;height:${size}px;background:${color};border:${borderWidth}px solid ${borderColor};${opacity}${isSelected ? 'box-shadow:0 0 0 3px rgba(37,99,235,0.3),0 2px 4px rgba(0,0,0,0.3);z-index:1000!important;' : ''}"></div>`,
         iconSize: [size, size],
         iconAnchor: [size / 2, size / 2],
       });

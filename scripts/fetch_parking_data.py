@@ -23,6 +23,15 @@ HEADERS = {
 DATA_DIR = Path(__file__).parent.parent / "webapp" / "public" / "data"
 CACHE_DIR = Path(__file__).parent.parent / "data" / "cache"
 
+# Manual corrections for facilities with incorrect geocoding or metadata
+FACILITY_OVERRIDES = {
+    # Garage Stadhuis Den Haag: geocoder misplaced it in 's-Hertogenbosch
+    "53773841-88d1-4087-81a0-e27d07582ce7": {
+        "latitude": 52.07830825,
+        "longitude": 4.32153612,
+    },
+}
+
 
 def fetch_index():
     """Fetch the SPDP v2 index of all parking facilities."""
@@ -166,6 +175,11 @@ def fetch_all_static(facilities):
                 errors += 1
 
     print(f"Fetched static data: {len(static_data)} ok, {errors} errors")
+
+    # Apply manual corrections
+    for uuid, overrides in FACILITY_OVERRIDES.items():
+        if uuid in static_data:
+            static_data[uuid].update(overrides)
 
     with open(cache_file, "w") as f:
         json.dump(static_data, f)

@@ -42,7 +42,7 @@ export default function AboutModal({ isOpen, onClose }: AboutModalProps) {
     >
       <div className="p-4 sm:p-6 overflow-y-auto max-h-[90vh]">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-gray-900">Over Parkeerviewer</h2>
+          <h2 className="text-xl font-bold text-gray-900">Over Parkeerdataviewer</h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition"
@@ -112,7 +112,7 @@ export default function AboutModal({ isOpen, onClose }: AboutModalProps) {
           <div>
             <h3 className="font-semibold text-gray-900 mb-2">API</h3>
             <p>
-              De Parkeerviewer biedt een gratis REST API aan. Bekijk de{' '}
+              De Parkeerdataviewer biedt een gratis REST API aan. Bekijk de{' '}
               <a href="/api/v1/docs" className="text-blue-600 hover:underline">
                 API documentatie
               </a>{' '}

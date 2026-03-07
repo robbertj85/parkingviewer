@@ -91,8 +91,8 @@ export default function DetailPanel({ feature, onClose, mobile }: DetailPanelPro
   const [staticJsonLoading, setStaticJsonLoading] = useState(false);
   const [dynamicJsonLoading, setDynamicJsonLoading] = useState(false);
   const [miniMapSatellite, setMiniMapSatellite] = useState(false);
-  const [selectedHour, setSelectedHour] = useState<number | null>(null);
   const [timeRange, setTimeRange] = useState<'24h' | '7d' | '30d' | '1y'>('7d');
+  const [selectedPoint, setSelectedPoint] = useState<number | null>(null);
 
   const props = feature.properties;
   const [lng, lat] = feature.geometry.coordinates;
@@ -102,7 +102,7 @@ export default function DetailPanel({ feature, onClose, mobile }: DetailPanelPro
   // Fetch static API data for address info
   useEffect(() => {
     setStaticInfo(null);
-    setSelectedHour(null);
+    setSelectedPoint(null);
     setStaticLoading(true);
     fetch(`https://npropendata.rdw.nl/parkingdata/v2/static/${props.uuid}`, {
       headers: { 'Accept': 'application/json' },
@@ -184,13 +184,14 @@ export default function DetailPanel({ feature, onClose, mobile }: DetailPanelPro
 
   // Fetch today's + history hourly data based on time range
   useEffect(() => {
+    setSelectedPoint(null);
     setTodayData(null);
     setHistoryDays([]);
     setHistoryLoading(true);
 
     const rangeDays = timeRange === '24h' ? 1 : timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : 365;
     const dates: string[] = [];
-    for (let i = 0; i <= rangeDays; i++) {
+    for (let i = 0; i < rangeDays; i++) {
       const d = new Date();
       d.setDate(d.getDate() - i);
       const y = d.getFullYear();
@@ -228,64 +229,84 @@ export default function DetailPanel({ feature, onClose, mobile }: DetailPanelPro
     return null;
   };
 
-  // Build hourly chart data with historical averages
-  const hourlyData = (() => {
-    if (!todayData && historyDays.length === 0) return null;
-    const hours: { hour: string; pct: number | null; occupied: number | null; capacity: number | null; histAvg: number | null; isLatest: boolean }[] = [];
-    let lastDataHour = -1;
+  // Build chronological timeline data from all days
+  const timelineData = (() => {
+    const allDays = [...historyDays].reverse(); // oldest first
+    if (todayData) allDays.push(todayData);
+    if (allDays.length === 0) return null;
 
-    for (let h = 0; h < 24; h++) {
-      const key = h.toString().padStart(2, '0');
+    const points: { date: string; hour: string; pct: number | null; occupied: number | null; capacity: number | null }[] = [];
 
-      // Today's value
-      const todayResult = todayData ? extractData(todayData.snapshots[key]) : null;
-      if (todayResult !== null) lastDataHour = h;
-
-      // Historical average from past days
-      const histValues: number[] = [];
-      for (const day of historyDays) {
-        const val = extractData(day.snapshots[key]);
-        if (val !== null) histValues.push(val.pct);
+    if (timeRange === '1y') {
+      // Daily averages for 1-year view
+      for (const day of allDays) {
+        const dayValues: { pct: number; occupied: number; capacity: number }[] = [];
+        for (let h = 0; h < 24; h++) {
+          const key = h.toString().padStart(2, '0');
+          const result = extractData(day.snapshots[key]);
+          if (result) dayValues.push(result);
+        }
+        if (dayValues.length > 0) {
+          const avgPct = Math.round(dayValues.reduce((a, b) => a + b.pct, 0) / dayValues.length);
+          const avgOccupied = Math.round(dayValues.reduce((a, b) => a + b.occupied, 0) / dayValues.length);
+          const maxCapacity = Math.max(...dayValues.map(v => v.capacity));
+          points.push({ date: day.date, hour: '00', pct: avgPct, occupied: avgOccupied, capacity: maxCapacity });
+        } else {
+          points.push({ date: day.date, hour: '00', pct: null, occupied: null, capacity: null });
+        }
       }
-      const histAvg = histValues.length > 0
-        ? Math.round(histValues.reduce((a, b) => a + b, 0) / histValues.length)
-        : null;
-
-      hours.push({
-        hour: key,
-        pct: todayResult?.pct ?? null,
-        occupied: todayResult?.occupied ?? null,
-        capacity: todayResult?.capacity ?? null,
-        histAvg,
-        isLatest: false,
-      });
+    } else {
+      // Hourly data for other views
+      for (const day of allDays) {
+        for (let h = 0; h < 24; h++) {
+          const key = h.toString().padStart(2, '0');
+          const result = extractData(day.snapshots[key]);
+          points.push({
+            date: day.date,
+            hour: key,
+            pct: result?.pct ?? null,
+            occupied: result?.occupied ?? null,
+            capacity: result?.capacity ?? null,
+          });
+        }
+      }
     }
-
-    // Mark the latest data point
-    if (lastDataHour >= 0) {
-      hours[lastDataHour].isLatest = true;
-    }
-
-    return hours;
+    return points.length > 0 ? points : null;
   })();
 
+  const pointWidth = timeRange === '24h' ? 0 : timeRange === '7d' ? 12 : timeRange === '30d' ? 6 : 8;
+  const needsScroll = timeRange !== '24h' && timelineData !== null;
+
   const avgPct = (() => {
-    if (!hourlyData) return null;
-    const valid = hourlyData.filter(h => h.pct !== null).map(h => h.pct!);
+    if (!timelineData) return null;
+    const valid = timelineData.filter(h => h.pct !== null).map(h => h.pct!);
     if (valid.length === 0) return null;
     return Math.round(valid.reduce((a, b) => a + b, 0) / valid.length);
   })();
 
-  // Get capacity for absolute mode
   const chartCapacity = (() => {
-    if (!hourlyData) return null;
-    const caps = hourlyData.filter(h => h.capacity !== null).map(h => h.capacity!);
+    if (!timelineData) return null;
+    const caps = timelineData.filter(h => h.capacity !== null).map(h => h.capacity!);
     return caps.length > 0 ? Math.max(...caps) : null;
   })();
 
   const lastUpdate = props.lastUpdated
     ? new Date(props.lastUpdated * 1000).toLocaleString('nl-NL', { timeZone: 'Europe/Amsterdam' })
     : 'Onbekend';
+
+  const isStale = props.lastUpdated
+    ? (Date.now() / 1000 - props.lastUpdated) > 24 * 60 * 60
+    : false;
+
+  const staleLabel = (() => {
+    if (!props.lastUpdated || !isStale) return '';
+    const hoursAgo = Math.floor((Date.now() / 1000 - props.lastUpdated) / 3600);
+    if (hoursAgo < 48) return `${hoursAgo} uur geleden`;
+    const daysAgo = Math.floor(hoursAgo / 24);
+    if (daysAgo < 60) return `${daysAgo} dagen geleden`;
+    const monthsAgo = Math.floor(daysAgo / 30);
+    return `${monthsAgo} maanden geleden`;
+  })();
 
   const streetViewUrl = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}`;
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
@@ -378,6 +399,17 @@ export default function DetailPanel({ feature, onClose, mobile }: DetailPanelPro
               <div className="text-[10px] text-gray-500">Bezet %</div>
             </div>
           </div>
+          {/* Stale data warning */}
+          {isStale && (
+            <div className="flex items-start gap-2 mt-2 p-2 bg-amber-50 border border-amber-200 rounded-lg">
+              <svg className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+              <div className="text-[11px] text-amber-800">
+                <span className="font-medium">Data verouderd</span> — laatste update {staleLabel}. Deze garage stuurt mogelijk geen realtime data meer naar het RDW.
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Status */}
@@ -441,13 +473,13 @@ export default function DetailPanel({ feature, onClose, mobile }: DetailPanelPro
           )}
         </div>
 
-        {/* Hourly occupancy chart */}
+        {/* Occupancy timeline chart */}
         <div>
           <div className="mb-2">
             <div className="flex items-center justify-between">
-              <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wide">Bezetting vandaag (per uur)</h3>
+              <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wide">Bezetting (per uur)</h3>
               {/* % / # toggle */}
-              {hourlyData && chartCapacity && (
+              {timelineData && chartCapacity && (
                 <div className="flex bg-gray-100 rounded text-[10px] font-medium">
                   <button
                     onClick={() => setChartMode('pct')}
@@ -478,11 +510,11 @@ export default function DetailPanel({ feature, onClose, mobile }: DetailPanelPro
             </div>
           </div>
           {historyLoading ? (
-            <div className="animate-pulse h-24 bg-gray-100 rounded"></div>
-          ) : hourlyData ? (
+            <div className="animate-pulse h-28 bg-gray-100 rounded"></div>
+          ) : timelineData ? (
             <div className="flex">
               {/* Y-axis labels */}
-              <div className="flex flex-col justify-between h-28 pr-1.5 text-[9px] text-gray-400 flex-shrink-0 text-right">
+              <div className="flex flex-col justify-between h-32 pt-4 pr-1.5 text-[9px] text-gray-400 flex-shrink-0 text-right">
                 {chartMode === 'pct' || !chartCapacity ? (
                   <>
                     <span>100%</span>
@@ -501,128 +533,152 @@ export default function DetailPanel({ feature, onClose, mobile }: DetailPanelPro
                   </>
                 )}
               </div>
-              {/* Chart area */}
-              <div className="flex-1 relative h-28">
-                {/* Grid lines */}
-                {[0, 25, 50, 75].map((pct) => (
-                  <div
-                    key={pct}
-                    className="absolute left-0 right-0 border-t border-gray-100 pointer-events-none"
-                    style={{ bottom: `${pct}%` }}
-                  />
-                ))}
-                {/* Average line */}
-                {avgPct !== null && (
-                  <div
-                    className="absolute left-0 right-0 border-t-2 border-dashed border-blue-400/60 pointer-events-none z-10"
-                    style={{ bottom: `${Math.max(avgPct, 2)}%` }}
-                    title={`Gemiddeld vandaag: ${avgPct}%`}
-                  >
-                    <span className="absolute -top-3.5 right-0 text-[9px] font-medium text-blue-500 bg-white/80 px-0.5 rounded">
-                      gem. {chartMode === 'abs' && chartCapacity ? Math.round(chartCapacity * avgPct / 100) : `${avgPct}%`}
-                    </span>
-                  </div>
-                )}
-                {/* Connecting lines for history */}
-                <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none">
-                  {hourlyData.map(({ histAvg }, i) => {
-                    if (histAvg === null) return null;
-                    const nextWithAvg = hourlyData.slice(i + 1).findIndex(h => h.histAvg !== null);
-                    if (nextWithAvg === -1) return null;
-                    const j = i + 1 + nextWithAvg;
-                    const x1 = ((i + 0.5) / 24) * 100;
-                    const x2 = ((j + 0.5) / 24) * 100;
-                    const y1 = 100 - Math.max(histAvg, 2);
-                    const y2 = 100 - Math.max(hourlyData[j].histAvg!, 2);
-                    return <line key={`hl-${i}`} x1={`${x1}%`} y1={`${y1}%`} x2={`${x2}%`} y2={`${y2}%`} stroke="#93c5fd" strokeWidth="1.5" strokeDasharray="3 2" />;
-                  })}
-                </svg>
-                {/* Connecting lines for today */}
-                <svg className="absolute inset-0 w-full h-full pointer-events-none z-[2]" preserveAspectRatio="none">
-                  {hourlyData.map(({ pct }, i) => {
-                    if (pct === null) return null;
-                    const nextWithPct = hourlyData.slice(i + 1).findIndex(h => h.pct !== null);
-                    if (nextWithPct === -1) return null;
-                    const j = i + 1 + nextWithPct;
-                    const x1 = ((i + 0.5) / 24) * 100;
-                    const x2 = ((j + 0.5) / 24) * 100;
-                    const y1 = 100 - Math.max(pct, 2);
-                    const y2 = 100 - Math.max(hourlyData[j].pct!, 2);
-                    return <line key={`tl-${i}`} x1={`${x1}%`} y1={`${y1}%`} x2={`${x2}%`} y2={`${y2}%`} stroke="#3b82f6" strokeWidth="2" />;
-                  })}
-                </svg>
-                {/* Data points */}
-                <div className="flex items-end gap-[2px] h-full relative z-[3]">
-                  {hourlyData.map(({ hour, pct, occupied, capacity, histAvg, isLatest }, idx) => {
-                    const isSelected = selectedHour === idx;
-                    const showLabel = isSelected && pct !== null;
-                    return (
-                    <div
-                      key={hour}
-                      className="flex-1 flex flex-col items-center h-full relative cursor-pointer"
-                      onClick={() => setSelectedHour(isSelected ? null : (pct !== null ? idx : null))}
-                    >
-                      {/* Historical average dot */}
-                      {histAvg !== null && (
+              {/* Scrollable chart + x-axis area */}
+              <div className="flex-1 overflow-hidden">
+                <div className="overflow-x-auto overflow-y-visible thin-scrollbar">
+                  <div style={{ width: needsScroll ? `${timelineData.length * pointWidth}px` : '100%' }}>
+                    {/* Chart area */}
+                    <div className="relative h-28 mt-4">
+                      {/* Grid lines */}
+                      {[0, 25, 50, 75].map((pct) => (
                         <div
-                          className="absolute w-2 h-2 rounded-full bg-blue-300 left-1/2 -translate-x-1/2"
-                          style={{ bottom: `calc(${Math.max(histAvg, 2)}% - 4px)` }}
+                          key={pct}
+                          className="absolute left-0 right-0 border-t border-gray-100 pointer-events-none"
+                          style={{ bottom: `${pct}%` }}
                         />
-                      )}
-                      {/* Today's dot */}
-                      {pct !== null && (
+                      ))}
+                      {/* Average line */}
+                      {avgPct !== null && (
                         <div
-                          className={`absolute left-1/2 -translate-x-1/2 rounded-full z-[1] transition-all ${isLatest ? 'w-3 h-3 bg-blue-600 ring-2 ring-blue-300' : isSelected ? 'w-3 h-3 bg-blue-600' : 'w-2 h-2 bg-blue-600'}`}
-                          style={{ bottom: `calc(${Math.max(pct, 2)}% - ${isLatest || isSelected ? 6 : 4}px)` }}
-                        />
-                      )}
-                      {/* Clicked tooltip */}
-                      {showLabel && (
-                        <div
-                          className="absolute left-1/2 -translate-x-1/2 z-20 bg-gray-800 text-white text-[9px] font-medium px-1.5 py-0.5 rounded shadow whitespace-nowrap"
-                          style={{ bottom: `calc(${Math.max(pct!, 2)}% + 6px)` }}
+                          className="absolute left-0 right-0 border-t-2 border-dashed border-blue-400/60 pointer-events-none z-10"
+                          style={{ bottom: `${Math.min(Math.max(avgPct, 2), 105)}%` }}
                         >
-                          {chartMode === 'abs' && occupied !== null ? `${occupied}/${capacity}` : `${pct}%`}
-                          <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-[3px] border-r-[3px] border-t-[3px] border-transparent border-t-gray-800" />
+                          <span className="absolute -top-3.5 text-[9px] font-medium text-blue-500 bg-white/80 px-0.5 rounded" style={{ right: 0, position: 'sticky' }}>
+                            gem. {chartMode === 'abs' && chartCapacity ? Math.round(chartCapacity * avgPct / 100) : `${avgPct}%`}
+                          </span>
                         </div>
                       )}
+                      {/* Connecting lines */}
+                      <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none">
+                        {timelineData.map((point, i) => {
+                          if (point.pct === null) return null;
+                          const nextIdx = timelineData.slice(i + 1).findIndex(p => p.pct !== null);
+                          if (nextIdx === -1) return null;
+                          const j = i + 1 + nextIdx;
+                          const total = timelineData.length;
+                          const x1 = ((i + 0.5) / total) * 100;
+                          const x2 = ((j + 0.5) / total) * 100;
+                          const y1 = 100 - Math.min(Math.max(point.pct, 2), 105);
+                          const y2 = 100 - Math.min(Math.max(timelineData[j].pct!, 2), 105);
+                          return <line key={`l-${i}`} x1={`${x1}%`} y1={`${y1}%`} x2={`${x2}%`} y2={`${y2}%`} stroke="#3b82f6" strokeWidth="1.5" />;
+                        })}
+                      </svg>
+                      {/* Selected point line */}
+                      {selectedPoint !== null && (
+                        <div
+                          className="absolute top-0 bottom-0 w-0.5 bg-red-500/70 z-20 pointer-events-none"
+                          style={{ left: `${((selectedPoint + 0.5) / timelineData.length) * 100}%` }}
+                        />
+                      )}
+                      {/* Day boundary markers */}
+                      {needsScroll && timelineData.map((point, i) => {
+                        if (point.hour !== '00' || i === 0) return null;
+                        return (
+                          <div
+                            key={`day-${i}`}
+                            className="absolute top-0 bottom-0 border-l border-gray-200/60 pointer-events-none z-[1]"
+                            style={{ left: `${(i / timelineData.length) * 100}%` }}
+                          />
+                        );
+                      })}
+                      {/* Data points */}
+                      <div className="flex items-end h-full relative z-[3]">
+                        {timelineData.map((point, idx) => {
+                          const isActive = selectedPoint === idx;
+                          const showTooltip = isActive && point.pct !== null;
+                          return (
+                            <div
+                              key={`${point.date}-${point.hour}`}
+                              className={`flex flex-col items-center h-full relative cursor-pointer ${needsScroll ? '' : 'flex-1'}`}
+                              style={needsScroll ? { width: `${pointWidth}px`, flexShrink: 0 } : undefined}
+                              onClick={() => setSelectedPoint(isActive ? null : (point.pct !== null ? idx : null))}
+                            >
+                              {point.pct !== null && (
+                                <div
+                                  className={`absolute left-1/2 -translate-x-1/2 rounded-full z-[1] transition-all ${isActive ? 'w-3 h-3 bg-blue-600 ring-2 ring-blue-300' : 'w-1.5 h-1.5 bg-blue-600'}`}
+                                  style={{ bottom: `calc(${Math.min(Math.max(point.pct, 2), 105)}% - ${isActive ? 6 : 3}px)` }}
+                                />
+                              )}
+                              {showTooltip && (
+                                <div
+                                  className="absolute left-1/2 -translate-x-1/2 z-20 bg-gray-800 text-white text-[9px] font-medium px-1.5 py-0.5 rounded shadow whitespace-nowrap"
+                                  style={{ bottom: `calc(${Math.min(Math.max(point.pct!, 2), 105)}% + 8px)` }}
+                                >
+                                  {point.date} {point.hour}:00 &mdash; {chartMode === 'abs' && point.occupied !== null ? `${point.occupied}/${point.capacity}` : `${point.pct}%`}
+                                  <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-[3px] border-r-[3px] border-t-[3px] border-transparent border-t-gray-800" />
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
-                    );
-                  })}
+                    {/* X-axis labels inside scrollable area */}
+                    <div className="flex mt-0.5">
+                      {(() => {
+                        if (timeRange === '1y') {
+                          // Daily points — show date at regular intervals
+                          const labelInterval = Math.max(1, Math.floor(timelineData.length / 12));
+                          return timelineData.map((point, idx) => {
+                            const w = { width: `${pointWidth}px`, flexShrink: 0 };
+                            if (idx % labelInterval === 0) {
+                              const dateLabel = point.date.replace(/^\d{4}-/, '');
+                              return (
+                                <div key={`x-${idx}`} style={w as React.CSSProperties} className="text-[8px] text-gray-400">
+                                  {dateLabel}
+                                </div>
+                              );
+                            }
+                            return <div key={`x-${idx}`} style={w as React.CSSProperties} />;
+                          });
+                        }
+
+                        const hourInterval = timeRange === '24h' ? 3 : timeRange === '7d' ? 6 : 12;
+                        return timelineData.map((point, idx) => {
+                          const h = parseInt(point.hour);
+                          const w = needsScroll ? { width: `${pointWidth}px`, flexShrink: 0 } : undefined;
+                          const cls = needsScroll ? '' : 'flex-1';
+
+                          // Show date label at day boundary (hour 00) for multi-day
+                          if (h === 0 && timeRange !== '24h') {
+                            const dateLabel = point.date.replace(/^\d{4}-/, '');
+                            return (
+                              <div key={`x-${idx}`} style={w as React.CSSProperties} className={`text-[8px] font-medium text-gray-500 ${cls}`}>
+                                {dateLabel}
+                              </div>
+                            );
+                          }
+
+                          // Show hour label at intervals
+                          if (h % hourInterval === 0) {
+                            return (
+                              <div key={`x-${idx}`} style={w as React.CSSProperties} className={`text-[8px] text-gray-400 ${cls} ${!needsScroll ? 'text-center' : ''}`}>
+                                {point.hour}h
+                              </div>
+                            );
+                          }
+
+                          // Empty spacer
+                          return <div key={`x-${idx}`} style={w} className={cls} />;
+                        });
+                      })()}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           ) : (
             <p className="text-xs text-gray-400">Geen data beschikbaar</p>
-          )}
-          {hourlyData && (
-            <div className="flex">
-              <div className="w-[30px] flex-shrink-0" />
-              <div className="flex-1 flex justify-between mt-1 text-[9px] text-gray-400">
-                <span>00:00</span>
-                <span>06:00</span>
-                <span>12:00</span>
-                <span>18:00</span>
-                <span>23:00</span>
-              </div>
-            </div>
-          )}
-          {/* Legend */}
-          {hourlyData && historyDays.length > 0 && (
-            <div className="flex items-center gap-3 mt-1.5 text-[9px] text-gray-400">
-              <span className="flex items-center gap-1">
-                <span className="inline-block w-2.5 h-2.5 rounded-full bg-blue-600 ring-1 ring-blue-300"></span>
-                Laatste meting
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="inline-block w-2 h-2 rounded-full bg-blue-600"></span>
-                Vandaag
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="inline-block w-2 h-2 rounded-full bg-blue-300"></span>
-                Gem. {timeRange === '1y' ? '1j' : timeRange}
-              </span>
-            </div>
           )}
         </div>
 

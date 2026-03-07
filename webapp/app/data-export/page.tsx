@@ -142,7 +142,7 @@ export default function DataExportPage() {
       <header className="bg-white shadow-sm">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-4">
           <Link href="/" className="text-lg font-bold text-gray-900 hover:text-blue-600 transition">
-            Parkeerviewer
+            Parkeerdataviewer
           </Link>
           <span className="text-gray-300">|</span>
           <h1 className="text-lg font-medium text-gray-700">Data Export</h1>
