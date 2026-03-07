@@ -1,6 +1,6 @@
 {
   "municipality": "Oss",
-  "generated_at": "2026-03-07T11:11:24.696136+00:00",
+  "generated_at": "2026-03-07T11:26:58.035222+00:00",
   "facility_count": 1,
   "facilities": [
     {
@@ -15,11 +15,11 @@
       "latitude": 51.76499,
       "longitude": 5.531281,
       "capacity": 234,
-      "vacantSpaces": 189,
-      "occupancyPercent": 19.2,
+      "vacantSpaces": 186,
+      "occupancyPercent": 20.5,
       "open": true,
       "full": false,
-      "lastUpdated": 1772881650,
+      "lastUpdated": 1772882776,
       "minimumHeightInMeters": null,
       "chargingPointCapacity": 0,
       "disabledAccess": false,

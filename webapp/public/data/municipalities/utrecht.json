@@ -1,6 +1,6 @@
 {
   "municipality": "utrecht",
-  "generated_at": "2026-03-07T11:11:24.696136+00:00",
+  "generated_at": "2026-03-07T11:26:58.035222+00:00",
   "facility_count": 1,
   "facilities": [
     {
@@ -14,12 +14,12 @@
       "province": "",
       "latitude": 52.089612,
       "longitude": 5.113428,
-      "capacity": 312,
-      "vacantSpaces": 183,
-      "occupancyPercent": 41.3,
+      "capacity": 314,
+      "vacantSpaces": 180,
+      "occupancyPercent": 42.7,
       "open": true,
       "full": false,
-      "lastUpdated": 1772881833,
+      "lastUpdated": 1772882733,
       "minimumHeightInMeters": null,
       "chargingPointCapacity": 0,
       "disabledAccess": false,

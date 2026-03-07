@@ -1,6 +1,6 @@
 {
   "municipality": "Sneek",
-  "generated_at": "2026-03-07T11:11:24.696136+00:00",
+  "generated_at": "2026-03-07T11:26:58.035222+00:00",
   "facility_count": 1,
   "facilities": [
     {
@@ -15,11 +15,11 @@
       "latitude": 53.031308,
       "longitude": 5.650877,
       "capacity": 55,
-      "vacantSpaces": 52,
-      "occupancyPercent": 5.5,
+      "vacantSpaces": 50,
+      "occupancyPercent": 9.1,
       "open": true,
       "full": false,
-      "lastUpdated": 1772881282,
+      "lastUpdated": 1772882599,
       "minimumHeightInMeters": null,
       "chargingPointCapacity": 0,
       "disabledAccess": false,
