@@ -1,6 +1,6 @@
 {
   "municipality": "Duivendrecht",
-  "generated_at": "2026-03-07T05:42:01.677009+00:00",
+  "generated_at": "2026-03-07T06:52:26.356416+00:00",
   "facility_count": 1,
   "facilities": [
     {
@@ -19,7 +19,7 @@
       "occupancyPercent": 0.4,
       "open": true,
       "full": false,
-      "lastUpdated": 1772861796,
+      "lastUpdated": 1772866210,
       "minimumHeightInMeters": null,
       "chargingPointCapacity": 0,
       "disabledAccess": false,
