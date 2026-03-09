@@ -1,6 +1,6 @@
 {
   "municipality": "Woerden",
-  "generated_at": "2026-03-09T07:14:39.128238+00:00",
+  "generated_at": "2026-03-09T08:55:04.085599+00:00",
   "facility_count": 3,
   "facilities": [
     {
@@ -37,11 +37,11 @@
       "latitude": 52.08568,
       "longitude": 4.89278,
       "capacity": 154,
-      "vacantSpaces": 104,
-      "occupancyPercent": 32.5,
+      "vacantSpaces": 49,
+      "occupancyPercent": 68.2,
       "open": true,
       "full": false,
-      "lastUpdated": 1773040314,
+      "lastUpdated": 1773046389,
       "minimumHeightInMeters": 0.0,
       "chargingPointCapacity": 0,
       "disabledAccess": false,
