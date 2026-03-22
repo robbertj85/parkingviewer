@@ -1,6 +1,6 @@
 {
   "municipality": "Zaanstad",
-  "generated_at": "2026-03-22T05:58:19.380994+00:00",
+  "generated_at": "2026-03-22T07:00:07.968730+00:00",
   "facility_count": 2,
   "facilities": [
     {
@@ -15,11 +15,11 @@
       "latitude": 52.43872,
       "longitude": 4.828007,
       "capacity": 236,
-      "vacantSpaces": 234,
-      "occupancyPercent": 0.8,
+      "vacantSpaces": 235,
+      "occupancyPercent": 0.4,
       "open": true,
       "full": false,
-      "lastUpdated": 1774158930,
+      "lastUpdated": 1774162530,
       "minimumHeightInMeters": 0.0,
       "chargingPointCapacity": 0,
       "disabledAccess": false,
@@ -41,7 +41,7 @@
       "occupancyPercent": 0.0,
       "open": true,
       "full": false,
-      "lastUpdated": 1774158819,
+      "lastUpdated": 1774162419,
       "minimumHeightInMeters": 0.0,
       "chargingPointCapacity": 0,
       "disabledAccess": false,
